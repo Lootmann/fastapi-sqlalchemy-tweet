@@ -19,7 +19,7 @@ class TestGetAllTweet:
         _, headers = await login_fixture
 
         for _ in range(5):
-            await client.post("/tweets", json={"tweet": random_string()}, headers=headers)
+            await client.post("/tweets", json={"message": random_string()}, headers=headers)
 
         resp = await client.get("/tweets", headers=headers)
         assert resp.status_code == status.HTTP_200_OK
@@ -31,12 +31,12 @@ class TestPostTweet:
     async def test_post_tweet(self, client, login_fixture):
         user, headers = await login_fixture
 
-        resp = await client.post("/tweets", json={"tweet": "my first tweet"}, headers=headers)
+        resp = await client.post("/tweets", json={"message": "my first tweet"}, headers=headers)
         assert resp.status_code == status.HTTP_201_CREATED
-        await client.post("/tweets", json={"tweet": "second tweet"}, headers=headers)
+        await client.post("/tweets", json={"message": "second tweet"}, headers=headers)
 
         tweet = tweet_schema.TweetCreateResponse(**resp.json())
-        assert tweet.tweet == "my first tweet"
+        assert tweet.message == "my first tweet"
 
         # check user-tweet relation
         resp = await client.get("/users", headers=headers)
@@ -44,8 +44,8 @@ class TestPostTweet:
 
         assert user_obj.id == user.id
         assert len(user_obj.tweets) == 2
-        assert user_obj.tweets[0].tweet == "my first tweet"
-        assert user_obj.tweets[1].tweet == "second tweet"
+        assert user_obj.tweets[0].message == "my first tweet"
+        assert user_obj.tweets[1].message == "second tweet"
 
     async def test_post_tweet_which_has_invalid_request_body(self, client, login_fixture):
         _, headers = await login_fixture
@@ -61,7 +61,7 @@ class TestGetTweet:
     async def test_get_tweet(self, client, login_fixture):
         _, headers = await login_fixture
 
-        resp = await client.post("/tweets", json={"tweet": "first post"}, headers=headers)
+        resp = await client.post("/tweets", json={"message": "first post"}, headers=headers)
         assert resp.status_code == status.HTTP_201_CREATED
 
         tweet_id = resp.json()["id"]
@@ -70,7 +70,7 @@ class TestGetTweet:
         resp = await client.get(f"/tweets/{tweet_id}", headers=headers)
         assert resp.status_code == status.HTTP_200_OK
         tweet = tweet_schema.Tweet(**resp.json())
-        assert tweet.tweet == "first post"
+        assert tweet.message == "first post"
 
     async def test_get_tweet_which_doesnt_exist(self, client, login_fixture):
         _, headers = await login_fixture
@@ -86,22 +86,24 @@ class TestUpdateTweet:
     async def test_update_tweet(self, client, login_fixture):
         _, headers = await login_fixture
 
-        resp = await client.post("/tweets", json={"tweet": "first post"}, headers=headers)
+        resp = await client.post("/tweets", json={"message": "first post"}, headers=headers)
         assert resp.status_code == status.HTTP_201_CREATED
 
         tweet_id = resp.json()["id"]
 
         # update patch
-        resp = await client.patch(f"/tweets/{tweet_id}", json={"tweet": "updated"}, headers=headers)
+        resp = await client.patch(
+            f"/tweets/{tweet_id}", json={"message": "updated"}, headers=headers
+        )
         assert resp.status_code == status.HTTP_200_OK
 
         tweet = tweet_schema.Tweet(**resp.json())
         assert tweet.id == tweet_id
-        assert tweet.tweet == "updated"
+        assert tweet.message == "updated"
 
     async def test_update_tweet_which_doesnt_exist(self, client, login_fixture):
         _, headers = await login_fixture
 
-        resp = await client.patch(f"/tweets/12345", json={"tweet": "updated"}, headers=headers)
+        resp = await client.patch(f"/tweets/12345", json={"message": "updated"}, headers=headers)
         assert resp.status_code == status.HTTP_404_NOT_FOUND
         assert resp.json() == {"detail": "Tweet: 12345 Not Found"}

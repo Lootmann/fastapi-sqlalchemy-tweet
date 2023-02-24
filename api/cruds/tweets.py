@@ -37,7 +37,7 @@ async def find_by_id(db: AsyncSession, tweet_id: int) -> tweet_model.Tweet | Non
 async def update_tweet(
     db: AsyncSession, updated: tweet_model.Tweet, tweet_body: tweet_schema.TweetUpdate
 ) -> tweet_model.Tweet:
-    updated.tweet = tweet_body.tweet
+    updated.message = tweet_body.message
 
     db.add(updated)
     await db.commit()
