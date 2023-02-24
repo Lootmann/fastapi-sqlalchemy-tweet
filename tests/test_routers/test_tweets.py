@@ -107,3 +107,25 @@ class TestUpdateTweet:
         resp = await client.patch(f"/tweets/12345", json={"message": "updated"}, headers=headers)
         assert resp.status_code == status.HTTP_404_NOT_FOUND
         assert resp.json() == {"detail": "Tweet: 12345 Not Found"}
+
+    async def test_update_tweet_when_not_author(self, client, login_fixture):
+        user, headers = await login_fixture
+
+        resp = await client.post("/tweets", json={"message": "first post"}, headers=headers)
+        assert resp.status_code == status.HTTP_201_CREATED
+
+        tweet_id = resp.json()["id"]
+
+        # create new user
+        new_user = UserFactory.create_user()
+        assert user.name != new_user.name
+        assert user.password != new_user.password
+
+        await client.post("/users", json={"name": new_user.name, "password": new_user.password})
+        new_headers = await create_access_token(client, new_user.name, new_user.password)
+
+        # update tweet
+        resp = await client.patch(
+            f"/tweets/{tweet_id}", json={"message": "updated new user"}, headers=new_headers
+        )
+        assert resp.status_code == status.HTTP_404_NOT_FOUND
