@@ -21,4 +21,4 @@ class Tweet(Base):
     user: Mapped["User"] = relationship(back_populates="tweets")
 
     def __repr__(self) -> str:
-        return f"<Tweet {self.id}: {self.tweet}>"
+        return f"<Tweet (id, tweet, user_id) = ({self.id}, {self.tweet}, {self.user_id})>"
