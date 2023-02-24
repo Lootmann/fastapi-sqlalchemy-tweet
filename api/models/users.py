@@ -1,7 +1,9 @@
-from sqlalchemy import ForeignKey
+from typing import List
+
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from api.db import Base
+from api.models.tweets import Tweet
 
 
 class User(Base):
@@ -11,5 +13,7 @@ class User(Base):
     name: Mapped[str]
     password: Mapped[str]
 
+    tweets: Mapped[List[Tweet]] = relationship(back_populates="user")
+
     def __repr__(self) -> str:
-        return f"<User (id, name) = ({self.id}, {self.name})>"
+        return f"<User (id, name, tweets) = ({self.id}, {self.name}, {self.tweets})>"
