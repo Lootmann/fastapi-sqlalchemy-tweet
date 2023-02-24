@@ -16,6 +16,10 @@ class TweetCreateResponse(TweetBase):
     id: int
 
 
+class TweetUpdate(TweetBase):
+    pass
+
+
 class Tweet(TweetBase):
     id: int
     user_id: int

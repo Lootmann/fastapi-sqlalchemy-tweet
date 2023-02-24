@@ -79,3 +79,29 @@ class TestGetTweet:
         resp = await client.get(f"/tweets/123", headers=headers)
         assert resp.status_code == status.HTTP_404_NOT_FOUND
         assert resp.json() == {"detail": "Tweet: 123 Not Found"}
+
+
+@pytest.mark.asyncio
+class TestUpdateTweet:
+    async def test_update_tweet(self, client, login_fixture):
+        _, headers = await login_fixture
+
+        resp = await client.post("/tweets", json={"tweet": "first post"}, headers=headers)
+        assert resp.status_code == status.HTTP_201_CREATED
+
+        tweet_id = resp.json()["id"]
+
+        # update patch
+        resp = await client.patch(f"/tweets/{tweet_id}", json={"tweet": "updated"}, headers=headers)
+        assert resp.status_code == status.HTTP_200_OK
+
+        tweet = tweet_schema.Tweet(**resp.json())
+        assert tweet.id == tweet_id
+        assert tweet.tweet == "updated"
+
+    async def test_update_tweet_which_doesnt_exist(self, client, login_fixture):
+        _, headers = await login_fixture
+
+        resp = await client.patch(f"/tweets/12345", json={"tweet": "updated"}, headers=headers)
+        assert resp.status_code == status.HTTP_404_NOT_FOUND
+        assert resp.json() == {"detail": "Tweet: 12345 Not Found"}
