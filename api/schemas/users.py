@@ -1,4 +1,8 @@
+from typing import List
+
 from pydantic import BaseModel, Field
+
+from api.schemas.tweets import Tweet
 
 
 class UserBase(BaseModel):
@@ -16,14 +20,26 @@ class UserUpdate(BaseModel):
         orm_mode = True
 
 
-class UserCreate(UserBase):
+class UserCreate(BaseModel):
+    name: str
     password: str
 
+    class Config:
+        orm_mode = True
 
-class UserCreateResponse(UserBase):
+
+class UserCreateResponse(BaseModel):
     id: int
+    name: str
+
+    class Config:
+        orm_mode = True
 
 
-class User(UserBase):
+class User(BaseModel):
     id: int
-    password: str
+    name: str
+    tweets: List[Tweet]
+
+    class Config:
+        orm_mode = True

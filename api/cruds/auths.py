@@ -23,7 +23,6 @@ async def get_hashed_password(plain_password: str) -> str:
 
 
 async def verify_password(plain: str, hashed: str) -> bool:
-    # NOTE: it takes 1 sec~. pretty slow
     return pwd_context.verify(plain, hashed)
 
 
