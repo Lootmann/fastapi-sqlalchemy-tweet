@@ -31,8 +31,7 @@ class TestGetAllUsers:
         assert len(resp.json()) == 2
 
     async def test_get_all_users(self, client):
-        for _ in range(9):
-            user = UserFactory.create_user()
+        for _ in range(4):
             await client.post(
                 "/users",
                 json={"name": random_string(), "password": random_string()},
@@ -44,7 +43,7 @@ class TestGetAllUsers:
 
         resp = await client.get("/users", headers=headers)
         assert resp.status_code == status.HTTP_200_OK
-        assert len(resp.json()) == 10
+        assert len(resp.json()) == 5
 
 
 @pytest.mark.asyncio
