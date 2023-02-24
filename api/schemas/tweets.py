@@ -13,7 +13,7 @@ class TweetCreate(TweetBase):
 
 
 class TweetCreateResponse(TweetBase):
-    pass
+    id: int
 
 
 class Tweet(TweetBase):

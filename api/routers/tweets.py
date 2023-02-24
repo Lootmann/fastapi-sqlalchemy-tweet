@@ -32,3 +32,15 @@ async def create_user(
     current_user=Depends(auth_api.get_current_active_user),
 ):
     return await tweet_api.create_tweet(db, current_user, tweet_body)
+
+
+@router.get("/tweets/{tweet_id}", response_model=tweet_schema.Tweet, status_code=status.HTTP_200_OK)
+async def get_tweet(
+    tweet_id: int, db: AsyncSession = Depends(get_db), _=Depends(auth_api.get_current_active_user)
+):
+    tweet = await tweet_api.find_by_id(db, tweet_id)
+    if not tweet:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Tweet: {tweet_id} Not Found"
+        )
+    return tweet[0]
