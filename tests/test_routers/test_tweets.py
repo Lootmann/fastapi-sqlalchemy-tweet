@@ -50,9 +50,7 @@ class TestPostTweet:
     async def test_post_tweet_which_has_invalid_request_body(self, client, login_fixture):
         _, headers = await login_fixture
 
-        resp = await client.post(
-            "/tweets", json={"spam": "How do I stay wokewoke up?"}, headers=headers
-        )
+        resp = await client.post("/tweets", json={"spam": "How do I stay wokewoke up?"}, headers=headers)
         assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
@@ -92,9 +90,7 @@ class TestUpdateTweet:
         tweet_id = resp.json()["id"]
 
         # update patch
-        resp = await client.patch(
-            f"/tweets/{tweet_id}", json={"message": "updated"}, headers=headers
-        )
+        resp = await client.patch(f"/tweets/{tweet_id}", json={"message": "updated"}, headers=headers)
         assert resp.status_code == status.HTTP_200_OK
 
         tweet = tweet_schema.Tweet(**resp.json())
@@ -129,3 +125,50 @@ class TestUpdateTweet:
             f"/tweets/{tweet_id}", json={"message": "updated new user"}, headers=new_headers
         )
         assert resp.status_code == status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.asyncio
+class TestDeleteTweet:
+    async def test_delete_tweet(self, client, login_fixture):
+        _, headers = await login_fixture
+
+        resp = await client.post("/tweets", json={"message": "I'm here :^)"}, headers=headers)
+        assert resp.status_code == status.HTTP_201_CREATED
+        original_tweet = tweet_schema.TweetCreateResponse(**resp.json())
+
+        resp = await client.get("/tweets", headers=headers)
+        assert resp.status_code == status.HTTP_200_OK
+        assert len(resp.json()) == 1
+
+        # delete
+        resp = await client.delete(f"/tweets/{original_tweet.id}", headers=headers)
+        assert resp.status_code == status.HTTP_200_OK
+
+        resp = await client.get("/tweets", headers=headers)
+        assert resp.status_code == status.HTTP_200_OK
+        assert len(resp.json()) == 0
+
+    async def test_try_to_delete_tweet_which_doesnt_exist(self, client, login_fixture):
+        _, headers = await login_fixture
+
+        resp = await client.delete(f"/tweets/123", headers=headers)
+        assert resp.status_code == status.HTTP_404_NOT_FOUND
+        assert resp.json() == {"detail": "Tweet: 123 Not Found"}
+
+    async def test_try_to_delete_different_author_tweet(self, client, login_fixture):
+        _, headers = await login_fixture
+
+        resp = await client.post("/tweets", json={"message": "I'm here :^)"}, headers=headers)
+        assert resp.status_code == status.HTTP_201_CREATED
+        original_tweet = tweet_schema.TweetCreateResponse(**resp.json())
+
+        # create new user
+        user = UserFactory.create_user()
+        resp = await client.post("/users", json={"name": user.name, "password": user.password})
+        assert resp.status_code == status.HTTP_201_CREATED
+        new_headers = await create_access_token(client, user.name, user.password)
+
+        # try to delete tweet by new user
+        resp = await client.delete(f"/tweets/{original_tweet.id}", headers=new_headers)
+        assert resp.status_code == status.HTTP_401_UNAUTHORIZED
+        assert resp.json() == {"detail": "Not Authorized"}

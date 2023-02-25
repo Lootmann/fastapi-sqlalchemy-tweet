@@ -44,3 +44,9 @@ async def update_tweet(
     await db.refresh(updated)
 
     return updated
+
+
+async def delete_tweet(db: AsyncSession, deleted: tweet_model.Tweet) -> None:
+    await db.delete(deleted)
+    await db.commit()
+    return None
