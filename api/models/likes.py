@@ -21,4 +21,4 @@ class Like(Base):
     tweet: Mapped["Tweet"] = relationship("Tweet", back_populates="likes")
 
     def __repr__(self) -> str:
-        return f"<Favorite (id, user_id, tweet_id) = ({self.id}, {self.user_id}, {self.tweet_id})>"
+        return f"<Like (id, user_id, tweet_id) = ({self.id}, {self.user_id}, {self.tweet_id})>"

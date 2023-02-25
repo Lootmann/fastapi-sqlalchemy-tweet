@@ -7,13 +7,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from api.cruds import auths as auth_api
 from api.cruds import likes as like_api
 from api.db import get_db
-from api.models import likes as like_model
 from api.schemas import likes as like_schema
 
 router = APIRouter()
 
 
-@router.get("/tweets/{tweet_id}/likes", response_model=List[like_schema.Like], status_code=status.HTTP_200_OK)
+@router.get("/likes", response_model=List[like_schema.Like], status_code=status.HTTP_200_OK)
 async def get_all_likes(
     db: AsyncSession = Depends(get_db),
     current_user=Depends(auth_api.get_current_active_user),

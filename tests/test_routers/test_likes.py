@@ -34,8 +34,8 @@ class TestGetAllLikes:
 
 
 @pytest.mark.asyncio
-class TestPostFavorites:
-    async def test_create_favorite(self, client, login_fixture):
+class TestPostLikes:
+    async def test_create_like(self, client, login_fixture):
         _, headers = await login_fixture
 
         tweet_body = TweetFactory.gen_tweet()
@@ -45,7 +45,6 @@ class TestPostFavorites:
         assert resp.status_code == status.HTTP_201_CREATED
         assert resp.json()["message"] == tweet_body.message
 
-        # favorite == likes
         resp = await client.post(f"/tweets/{tweet_id}/likes", headers=headers)
         assert resp.status_code == status.HTTP_201_CREATED
 
@@ -54,15 +53,15 @@ class TestPostFavorites:
 
 
 @pytest.mark.asyncio
-class TestDeleteFavorites:
-    async def test_delete_favorite(self, client, login_fixture):
+class TestDeleteLikes:
+    async def test_delete_like(self, client, login_fixture):
         _, headers = await login_fixture
 
         tweet_body = TweetFactory.gen_tweet()
         resp = await TweetFactory.create_tweet(client, headers, tweet_body)
         tweet_id = resp.json()["id"]
 
-        # favorite
+        # like
         resp = await LikeFactory.create_like(client, headers, tweet_id)
         assert resp.status_code == status.HTTP_201_CREATED
 
@@ -71,4 +70,5 @@ class TestDeleteFavorites:
 
         # delete
         resp = await client.delete(f"/tweets/{tweet_id}/likes", headers=headers)
-        print(resp.json())
+        assert resp.status_code == status.HTTP_200_OK
+        assert resp.json() == None

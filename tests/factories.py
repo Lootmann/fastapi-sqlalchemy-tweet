@@ -70,7 +70,7 @@ class LikeFactory:
     @staticmethod
     async def create_like(client, headers: dict, tweet_id: int):
         """
-        create favorite
+        create like
 
         Args:
             client (AsyncSession)
@@ -78,6 +78,6 @@ class LikeFactory:
             tweet_id(int)        : Tweet id
 
         Return:
-            resp: favorite post response
+            resp: like post response
         """
         return await client.post(f"/tweets/{tweet_id}/likes", headers=headers)
