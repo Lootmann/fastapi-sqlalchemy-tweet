@@ -1,7 +1,7 @@
 from random import choice, randint
 from string import ascii_letters
 
-from api.schemas import favorites as favorite_schema
+from api.schemas import likes as like_schema
 from api.schemas import tweets as tweet_schema
 from api.schemas import users as user_schema
 from tests.init_async_client import async_client as client
@@ -66,22 +66,18 @@ class TweetFactory:
         return await client.post("/tweets", json={"message": tweet_body.message}, headers=headers)
 
 
-class FavoriteFactory:
+class LikeFactory:
     @staticmethod
-    def gen_favorite(tweet_id: int) -> favorite_schema.FavoriteCreate:
-        return favorite_schema.FavoriteCreate(tweet_id=tweet_id)
-
-    @staticmethod
-    async def create_favorite(client, headers: dict, favorite_body: favorite_schema.FavoriteCreate):
+    async def create_like(client, headers: dict, tweet_id: int):
         """
         create favorite
 
         Args:
             client (AsyncSession)
-            headers (dict token)   : Bearer JWT Token
-            favorite_body (schema) : FavoriteCreate schema
+            headers (dict token) : Bearer JWT Token
+            tweet_id(int)        : Tweet id
 
         Return:
             resp: favorite post response
         """
-        return await client.post("/favorites", json={"tweet_id": favorite_body.tweet_id}, headers=headers)
+        return await client.post(f"/tweets/{tweet_id}/likes", headers=headers)

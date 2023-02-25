@@ -1,23 +1,23 @@
 import pytest
 from fastapi import status
 
-from api.schemas import favorites as favorite_schema
-from tests.factories import FavoriteFactory, TweetFactory
+from api.schemas import likes as like_schema
+from tests.factories import LikeFactory, TweetFactory
 from tests.init_async_client import async_client as client
 
 
 @pytest.mark.asyncio
-class TestGetAllFavorites:
-    async def test_get_all_favorites_but_empty(self, client, login_fixture):
+class TestGetAllLikes:
+    async def test_get_all_likes_but_empty(self, client, login_fixture):
         _, headers = await login_fixture
 
-        resp = await client.get("/favorites", headers=headers)
+        resp = await client.get("/likes", headers=headers)
         assert resp.status_code == status.HTTP_200_OK
 
-    async def test_get_all_favorites(slef, client, login_fixture):
+    async def test_get_all_likes(slef, client, login_fixture):
         _, headers = await login_fixture
 
-        # create tweets and favorite these tweets
+        # create tweets and like these tweets
         for _ in range(20):
             tweet = TweetFactory.gen_tweet()
             resp = await TweetFactory.create_tweet(client, headers, tweet)
@@ -25,10 +25,10 @@ class TestGetAllFavorites:
             tweet_id = resp.json()["id"]
 
             # fav
-            resp = await client.post("/favorites", json={"tweet_id": tweet_id}, headers=headers)
+            resp = await client.post(f"/tweets/{tweet_id}/likes", headers=headers)
             assert resp.status_code == status.HTTP_201_CREATED
 
-        resp = await client.get("/favorites", headers=headers)
+        resp = await client.get("/likes", headers=headers)
         assert resp.status_code == status.HTTP_200_OK
         assert len(resp.json()) == 20
 
@@ -46,10 +46,10 @@ class TestPostFavorites:
         assert resp.json()["message"] == tweet_body.message
 
         # favorite == likes
-        resp = await client.post("/favorites", json={"tweet_id": tweet_id}, headers=headers)
+        resp = await client.post(f"/tweets/{tweet_id}/likes", headers=headers)
         assert resp.status_code == status.HTTP_201_CREATED
 
-        fav_response = favorite_schema.FavoriteCreateResponse(**resp.json())
+        fav_response = like_schema.LikeCreateResponse(**resp.json())
         assert fav_response.tweet_id == tweet_id
 
 
@@ -63,13 +63,12 @@ class TestDeleteFavorites:
         tweet_id = resp.json()["id"]
 
         # favorite
-        favorite = FavoriteFactory.gen_favorite(tweet_id=tweet_id)
-        resp = await FavoriteFactory.create_favorite(client, headers, favorite)
+        resp = await LikeFactory.create_like(client, headers, tweet_id)
         assert resp.status_code == status.HTTP_201_CREATED
 
-        resp = await client.get("/favorites", headers=headers)
+        resp = await client.get(f"/tweets/{tweet_id}/likes", headers=headers)
         assert len(resp.json()) == 1
 
         # delete
-        resp = await client.delete(f"/favorites/{tweet_id}", headers=headers)
+        resp = await client.delete(f"/tweets/{tweet_id}/likes", headers=headers)
         print(resp.json())
