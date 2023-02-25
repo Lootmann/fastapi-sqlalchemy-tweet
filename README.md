@@ -37,8 +37,8 @@ erDiagram
     int user_id  FK
   }
 
-  users ||--o{ tweets    : "A User has Many Tweets"
-  users ||--o{ favorites : "A User has Many Favorites"
+  users  ||--o{ tweets    : "A User has Many Tweets"
+  users  ||--o{ favorites : "A User has Many Favorites"
   tweets ||--o{ favorites : "A Tweet has Many Favorites"
 ```
 
@@ -99,13 +99,18 @@ CREATE TABLE users (
   + [x] DEL   /tweets/:tweet_id
 
 * favorites
-  + [ ] GET  /favorites
-  + [ ] POST /favorites
-  + [ ] DEL  /favorites
+  + [x] GET  /favorites
+  + [x] POST /favorites
+  + [x] DEL  /favorites
 
 ## TODO
 
 * [Favorites](https://developer.twitter.com/en/docs/twitter-api/v1/tweets/post-and-engage/api-reference/get-favorites-list)
+
+* [Likes](https://developer.twitter.com/en/docs/twitter-api/tweets/likes/migrate/manage-likes-standard-to-twitter-api-v2)
+
+なんと Favorites は古いAPIだったことが判明
+現在は Likes というAPIに変わっておった すごい量の変更点が発生
 
 * [Lists](https://help.twitter.com/ja/using-twitter/twitter-lists)
 

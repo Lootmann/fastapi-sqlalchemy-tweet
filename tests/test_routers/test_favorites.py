@@ -2,7 +2,7 @@ import pytest
 from fastapi import status
 
 from api.schemas import favorites as favorite_schema
-from tests.factories import TweetFactory
+from tests.factories import FavoriteFactory, TweetFactory
 from tests.init_async_client import async_client as client
 
 
@@ -51,3 +51,25 @@ class TestPostFavorites:
 
         fav_response = favorite_schema.FavoriteCreateResponse(**resp.json())
         assert fav_response.tweet_id == tweet_id
+
+
+@pytest.mark.asyncio
+class TestDeleteFavorites:
+    async def test_delete_favorite(self, client, login_fixture):
+        _, headers = await login_fixture
+
+        tweet_body = TweetFactory.gen_tweet()
+        resp = await TweetFactory.create_tweet(client, headers, tweet_body)
+        tweet_id = resp.json()["id"]
+
+        # favorite
+        favorite = FavoriteFactory.gen_favorite(tweet_id=tweet_id)
+        resp = await FavoriteFactory.create_favorite(client, headers, favorite)
+        assert resp.status_code == status.HTTP_201_CREATED
+
+        resp = await client.get("/favorites", headers=headers)
+        assert len(resp.json()) == 1
+
+        # delete
+        resp = await client.delete(f"/favorites/{tweet_id}", headers=headers)
+        print(resp.json())

@@ -16,6 +16,10 @@ class FavoriteCreateResponse(FavoriteCreate):
     id: int
 
 
+class FavoriteDelete(FavoriteCreate):
+    pass
+
+
 class Favorite(FavoriteBase):
     id: int
     user_id: int

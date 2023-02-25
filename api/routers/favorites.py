@@ -31,3 +31,15 @@ async def create_favorite(
     current_user=Depends(auth_api.get_current_active_user),
 ):
     return await favorite_api.create_favorite(db, favorite_body, current_user)
+
+
+@router.delete("/favorites/{favorite_id}", response_model=None, status_code=status.HTTP_200_OK)
+async def delete_favorite(
+    tweet_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(auth_api.get_current_active_user),
+):
+    favorite = await favorite_api.find_by_user_id_and_tweet_id(db, current_user.id, tweet_id)
+    if not favorite:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Favorite Not Found")
+    return await favorite_api.delete_favorite(db, favorite)
