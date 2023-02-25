@@ -4,7 +4,7 @@ from string import ascii_letters
 from api.schemas import users as user_schema
 
 
-def random_string(min_: int = 5, max_: int = 20) -> str:
+def random_string(min_: int = 6, max_: int = 20) -> str:
     return "".join(choice(ascii_letters) for _ in range(randint(min_, max_)))
 
 
