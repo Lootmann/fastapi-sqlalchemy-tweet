@@ -57,14 +57,14 @@ classDiagram
   + [x] POST  /users
   + [x] GET   /users/:user_id
   + [x] PATCH /users
-  + [ ] DEL   /users
+  + [x] DEL   /users
 
 * tweets
   + [x] GET   /tweets
   + [x] POST  /tweets
   + [x] GET   /tweets/:tweet_id
   + [x] PATCH /tweets/:tweet_id
-  + [ ] DEL   /tweets/:tweet_id
+  + [x] DEL   /tweets/:tweet_id
 
 * favorites
   + [ ] GET  /favorites
