@@ -28,7 +28,7 @@ class Tweet(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship("User", back_populates="tweets")
 
-    favorites: Mapped[List["Like"]] = relationship("Favorite", back_populates="tweet")
+    likes: Mapped[List["Like"]] = relationship("Like", back_populates="tweet")
 
     def __repr__(self) -> str:
         return f"<Tweet (id, message, user_id) = ({self.id}, {self.message}, {self.user_id})>"

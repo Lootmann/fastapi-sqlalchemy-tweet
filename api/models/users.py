@@ -20,7 +20,7 @@ class User(Base):
     password: Mapped[str]
 
     tweets: Mapped[List["Tweet"]] = relationship("Tweet", back_populates="user")
-    favorites: Mapped[List["Like"]] = relationship("Like", back_populates="user")
+    likes: Mapped[List["Like"]] = relationship("Like", back_populates="user")
 
     def __repr__(self) -> str:
         return f"<User (id, name, tweets) = ({self.id}, {self.name}, {self.tweets})>"
