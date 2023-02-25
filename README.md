@@ -14,28 +14,32 @@
 * RESTful Design
   + Goto wiki
 
-## Model
+## ER Diagram
 
 ```mermaid
-classDiagram
-  class User {
-    +String Id
-    +String username
-    +String email
-    +String password
+erDiagram
+  users {
+    int        id       PK
+    string     name
+    string     password
+    references tweets
   }
 
-  class Tweet {
-    +String Id
-    +String content
-    +Bool is_public
+  tweets {
+    int  id      PK
+    int  user_id FK
+    text message
   }
 
-  class Favorites {
-    +String Id
-    +String tweet_id
-    +String user_id
+  favorites {
+    int id       PK
+    int tweet_id FK
+    int user_id  FK
   }
+
+  users ||--o{ tweets    : "A User has Many Tweets"
+  users ||--o{ favorites : "A User has Many Favorites"
+  tweets ||--o{ favorites : "A Tweet has Many Favorites"
 ```
 
 ## Schema
