@@ -9,6 +9,9 @@
   + query parameters
     - https://fastapi.tiangolo.com/ja/tutorial/query-params-str-validations/
 
+* RESTful Design
+  + Goto wiki
+
 ## Model
 
 ```mermaid
