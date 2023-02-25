@@ -34,6 +34,28 @@ class TestGetAllLikes:
 
 
 @pytest.mark.asyncio
+class TestGetLikingTweets:
+    async def test_get_all_tweets_which_user_likes(self, client, login_fixture):
+        user, headers = await login_fixture
+        tweet_ids = []
+
+        # 10 tweets
+        for _ in range(10):
+            tweet = TweetFactory.gen_tweet()
+            resp = await TweetFactory.create_tweet(client, headers, tweet)
+            tweet_ids.append(resp.json()["id"])
+
+        # one user likes 10 tweets
+        for tweet_id in tweet_ids:
+            await LikeFactory.create_like(client, headers, tweet_id)
+
+        # get all tweets which user likes
+        resp = await client.get(f"/users/{user.id}/likes/tweets", headers=headers)
+        assert resp.status_code == status.HTTP_200_OK
+        assert len(resp.json()) == 10
+
+
+@pytest.mark.asyncio
 class TestPostLikes:
     async def test_create_like(self, client, login_fixture):
         _, headers = await login_fixture

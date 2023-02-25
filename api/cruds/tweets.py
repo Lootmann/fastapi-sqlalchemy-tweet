@@ -3,19 +3,25 @@ from typing import List
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from api.models import tweets as tweet_model
-from api.models import users as user_model
+from api.models.likes import Like as LikeModel
+from api.models.tweets import Tweet as TweetModel
+from api.models.users import User as UserModel
 from api.schemas import tweets as tweet_schema
 
 
-async def get_all_tweets(db: AsyncSession) -> List[tweet_model.Tweet]:
-    return (await db.execute(select(tweet_model.Tweet))).fetchall()
+async def get_all_tweets(db: AsyncSession) -> List[TweetModel]:
+    return (await db.execute(select(TweetModel))).fetchall()
+
+
+async def get_all_tweets_which_user_likes(db: AsyncSession, user_id: int) -> List[TweetModel]:
+    """Get all tweets which a user likes"""
+    return (await db.execute(select(TweetModel).join(LikeModel).where(LikeModel.user_id == user_id))).all()
 
 
 async def create_tweet(
-    db: AsyncSession, current_user: user_model.User, tweet_body: tweet_schema.TweetCreate
-) -> tweet_model.Tweet:
-    tweet = tweet_model.Tweet(**tweet_body.dict())
+    db: AsyncSession, current_user: UserModel, tweet_body: tweet_schema.TweetCreate
+) -> TweetModel:
+    tweet = TweetModel(**tweet_body.dict())
     # if either one of them is written, this transaction will work properly.
     tweet.user = current_user
     tweet.user_id = current_user.id
@@ -27,16 +33,16 @@ async def create_tweet(
     return tweet
 
 
-async def find_by_id(db: AsyncSession, tweet_id: int) -> tweet_model.Tweet | None:
-    tweet = (await db.execute(select(tweet_model.Tweet).filter_by(id=tweet_id))).first()
+async def find_by_id(db: AsyncSession, tweet_id: int) -> TweetModel | None:
+    tweet = (await db.execute(select(TweetModel).filter_by(id=tweet_id))).first()
     if not tweet:
         return None
     return tweet[0]
 
 
 async def update_tweet(
-    db: AsyncSession, updated: tweet_model.Tweet, tweet_body: tweet_schema.TweetUpdate
-) -> tweet_model.Tweet:
+    db: AsyncSession, updated: TweetModel, tweet_body: tweet_schema.TweetUpdate
+) -> TweetModel:
     updated.message = tweet_body.message
 
     db.add(updated)
@@ -46,7 +52,7 @@ async def update_tweet(
     return updated
 
 
-async def delete_tweet(db: AsyncSession, deleted: tweet_model.Tweet) -> None:
+async def delete_tweet(db: AsyncSession, deleted: TweetModel) -> None:
     await db.delete(deleted)
     await db.commit()
     return None
