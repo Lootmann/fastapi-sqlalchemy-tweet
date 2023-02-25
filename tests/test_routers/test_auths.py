@@ -10,8 +10,8 @@ from tests.init_async_client import async_client as client
 class TestCreateToken:
     async def test_login_and_create_valid_token(self, client):
         # create user
-        user: user_schema.UserCreateResponse = UserFactory.create_user()
-        resp = await client.post("/users", json={"name": user.name, "password": user.password})
+        user = UserFactory.gen_user()
+        resp = await UserFactory.create_user(client, user)
         assert resp.status_code == status.HTTP_201_CREATED
 
         # login
@@ -29,11 +29,11 @@ class TestCreateToken:
 class TestLogin:
     async def test_try_to_login_with_invalid_user_info(self, client):
         # create user
-        user: user_schema.UserCreate = UserFactory.create_user()
-        resp = await client.post("/users", json={"name": user.name, "password": user.password})
+        user = UserFactory.gen_user()
+        resp = await UserFactory.create_user(client, user)
         assert resp.status_code == status.HTTP_201_CREATED
 
-        # login by wrong name
+        # login by wrong password
         resp = await client.post(
             "/token",
             data={"username": user.name, "password": "moge"},
@@ -41,7 +41,7 @@ class TestLogin:
         )
         assert resp.status_code == status.HTTP_404_NOT_FOUND
 
-        # login by wrong password
+        # login by wrong name
         resp = await client.post(
             "/token",
             data={"username": "hogehoge", "password": user.password},

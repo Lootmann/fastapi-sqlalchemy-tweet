@@ -1,36 +1,76 @@
 # Simple Twitter Clone
+* [Endpoint Map](https://developer.twitter.com/en/docs/twitter-api/migrate/twitter-api-endpoint-map)
 
 ## TODO
 
 * Mermaid
   + いい感じにグラフが書ける js plugin
+  + これが本当にいい感じ
 
 * fastapi
   + query parameters
     - https://fastapi.tiangolo.com/ja/tutorial/query-params-str-validations/
 
-## Model
+* RESTful Design
+  + Goto wiki
+
+## ER Diagram
 
 ```mermaid
-classDiagram
-  class User {
-    +String Id
-    +String username
-    +String email
-    +String password
+erDiagram
+  users {
+    int        id       PK
+    string     name
+    string     password
+    references tweets
   }
 
-  class Tweet {
-    +String Id
-    +String content
-    +Bool is_public
+  tweets {
+    int  id      PK
+    int  user_id FK
+    text message
   }
 
-  class Favorites {
-    +String Id
-    +String user_id
-    +String tweet_id
+  favorites {
+    int id       PK
+    int tweet_id FK
+    int user_id  FK
   }
+
+  users ||--o{ tweets    : "A User has Many Tweets"
+  users ||--o{ favorites : "A User has Many Favorites"
+  tweets ||--o{ favorites : "A Tweet has Many Favorites"
+```
+
+## Model
+
+```sql
+sqlite> .table
+favorites  tweets     users
+
+CREATE TABLE favorites (
+        id INTEGER NOT NULL,
+        user_id INTEGER NOT NULL,
+        tweet_id INTEGER NOT NULL,
+        PRIMARY KEY (id),
+        FOREIGN KEY(user_id) REFERENCES users (id),
+        FOREIGN KEY(tweet_id) REFERENCES tweets (id)
+);
+
+CREATE TABLE tweets (
+        id INTEGER NOT NULL,
+        message VARCHAR NOT NULL,
+        user_id INTEGER NOT NULL,
+        PRIMARY KEY (id),
+        FOREIGN KEY(user_id) REFERENCES users (id)
+);
+
+CREATE TABLE users (
+        id INTEGER NOT NULL,
+        name VARCHAR NOT NULL,
+        password VARCHAR NOT NULL,
+        PRIMARY KEY (id)
+);
 ```
 
 ## Schema
@@ -49,25 +89,39 @@ classDiagram
   + [x] POST  /users
   + [x] GET   /users/:user_id
   + [x] PATCH /users
-  + [ ] DEL   /users
+  + [x] DEL   /users
 
 * tweets
   + [x] GET   /tweets
   + [x] POST  /tweets
   + [x] GET   /tweets/:tweet_id
   + [x] PATCH /tweets/:tweet_id
-  + [ ] DEL   /tweets/:tweet_id
+  + [x] DEL   /tweets/:tweet_id
 
 * favorites
   + [ ] GET  /favorites
   + [ ] POST /favorites
-  + [ ] GET  /favorites/:favorite_id
+  + [ ] DEL  /favorites
 
-## Real Twitter API
+## TODO
 
-* searching
-  + https://twitter.com/search?q=nextjs&src=typed_query
+* [Favorites](https://developer.twitter.com/en/docs/twitter-api/v1/tweets/post-and-engage/api-reference/get-favorites-list)
 
-* favorite
-  + https://api.twitter.com/graphql/lI07N6Otwv1PhnEgXILM7A/FavoriteTweet
-  + https://api.twitter.com/graphql/ZYKSe-w7KEslx3JhSIk5LA/UnfavoriteTweet
+* [Lists](https://help.twitter.com/ja/using-twitter/twitter-lists)
+
+> リストを使用することで、タイムラインに表示するツイートをカスタマイズ、整理、優先順位付けできます
+> Twitterで他のユーザーが作成したリストに参加したり、自分のアカウントから、グループ、トピック、
+> または興味関心の対象別に、他のアカウントのリストを作成したりできます
+> リストタイムラインには、リストに登録されたアカウントのツイートのみが表示されます
+> また、お気に入りのリストを自分のタイムラインの上部に固定しておけば
+> 重要なアカウントからのツイートを見逃すこともありません。
+
+こんなに複雑なものはいらない
+Lists/members (tweet users) があればOKかな
+
+そこに登録されている members のツイートを一覧で表示できるみたいな機能でOK
+
+* Tags
+
+Twitter には message にタグと呼ばれるものを埋め込める
+面倒なので作らない

@@ -3,7 +3,7 @@ from fastapi import status
 
 from api.schemas import tweets as tweet_schema
 from api.schemas import users as user_schema
-from tests.factories import UserFactory, create_access_token, random_string
+from tests.factories import TweetFactory, UserFactory, create_access_token
 from tests.init_async_client import async_client as client
 
 
@@ -19,7 +19,8 @@ class TestGetAllTweet:
         _, headers = await login_fixture
 
         for _ in range(5):
-            await client.post("/tweets", json={"message": random_string()}, headers=headers)
+            tweet = TweetFactory.gen_tweet()
+            await TweetFactory.create_tweet(client, headers, tweet)
 
         resp = await client.get("/tweets", headers=headers)
         assert resp.status_code == status.HTTP_200_OK
@@ -50,9 +51,7 @@ class TestPostTweet:
     async def test_post_tweet_which_has_invalid_request_body(self, client, login_fixture):
         _, headers = await login_fixture
 
-        resp = await client.post(
-            "/tweets", json={"spam": "How do I stay wokewoke up?"}, headers=headers
-        )
+        resp = await client.post("/tweets", json={"spam": "How do I stay wokewoke up?"}, headers=headers)
         assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
@@ -92,9 +91,7 @@ class TestUpdateTweet:
         tweet_id = resp.json()["id"]
 
         # update patch
-        resp = await client.patch(
-            f"/tweets/{tweet_id}", json={"message": "updated"}, headers=headers
-        )
+        resp = await client.patch(f"/tweets/{tweet_id}", json={"message": "updated"}, headers=headers)
         assert resp.status_code == status.HTTP_200_OK
 
         tweet = tweet_schema.Tweet(**resp.json())
@@ -117,11 +114,11 @@ class TestUpdateTweet:
         tweet_id = resp.json()["id"]
 
         # create new user
-        new_user = UserFactory.create_user()
+        new_user = UserFactory.gen_user()
         assert user.name != new_user.name
         assert user.password != new_user.password
 
-        await client.post("/users", json={"name": new_user.name, "password": new_user.password})
+        await UserFactory.create_user(client, new_user)
         new_headers = await create_access_token(client, new_user.name, new_user.password)
 
         # update tweet
@@ -129,3 +126,53 @@ class TestUpdateTweet:
             f"/tweets/{tweet_id}", json={"message": "updated new user"}, headers=new_headers
         )
         assert resp.status_code == status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.asyncio
+class TestDeleteTweet:
+    async def test_delete_tweet(self, client, login_fixture):
+        _, headers = await login_fixture
+
+        tweet = TweetFactory.gen_tweet()
+        resp = await TweetFactory.create_tweet(client, headers, tweet)
+        assert resp.status_code == status.HTTP_201_CREATED
+
+        # keep original tweet
+        original_tweet = tweet_schema.TweetCreateResponse(**resp.json())
+
+        resp = await client.get("/tweets", headers=headers)
+        assert resp.status_code == status.HTTP_200_OK
+        assert len(resp.json()) == 1
+
+        # delete
+        resp = await client.delete(f"/tweets/{original_tweet.id}", headers=headers)
+        assert resp.status_code == status.HTTP_200_OK
+
+        resp = await client.get("/tweets", headers=headers)
+        assert resp.status_code == status.HTTP_200_OK
+        assert len(resp.json()) == 0
+
+    async def test_try_to_delete_tweet_which_doesnt_exist(self, client, login_fixture):
+        _, headers = await login_fixture
+
+        resp = await client.delete(f"/tweets/123", headers=headers)
+        assert resp.status_code == status.HTTP_404_NOT_FOUND
+        assert resp.json() == {"detail": "Tweet: 123 Not Found"}
+
+    async def test_try_to_delete_different_author_tweet(self, client, login_fixture):
+        _, headers = await login_fixture
+
+        resp = await client.post("/tweets", json={"message": "I'm here :^)"}, headers=headers)
+        assert resp.status_code == status.HTTP_201_CREATED
+        original_tweet = tweet_schema.TweetCreateResponse(**resp.json())
+
+        # create new user
+        user = UserFactory.gen_user()
+        resp = await UserFactory.create_user(client, user)
+        assert resp.status_code == status.HTTP_201_CREATED
+        new_headers = await create_access_token(client, user.name, user.password)
+
+        # try to delete tweet by new user
+        resp = await client.delete(f"/tweets/{original_tweet.id}", headers=new_headers)
+        assert resp.status_code == status.HTTP_401_UNAUTHORIZED
+        assert resp.json() == {"detail": "Not Authorized"}

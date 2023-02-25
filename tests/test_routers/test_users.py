@@ -21,8 +21,8 @@ class TestGetAllUsers:
     async def test_get_2_users(self, client, login_fixture):
         _, headers = await login_fixture
 
-        user = UserFactory.create_user()
-        await client.post("/users", json={"name": user.name, "password": user.password}, headers=headers)
+        user = UserFactory.gen_user()
+        await UserFactory.create_user(client, user)
 
         resp = await client.get("/users", headers=headers)
         assert resp.status_code == status.HTTP_200_OK
@@ -35,8 +35,8 @@ class TestGetAllUsers:
                 json={"name": random_string(), "password": random_string()},
             )
 
-        user = UserFactory.create_user()
-        await client.post("/users", json={"name": user.name, "password": user.password})
+        user = UserFactory.gen_user()
+        await UserFactory.create_user(client, user)
         headers = await create_access_token(client, user.name, user.password)
 
         resp = await client.get("/users", headers=headers)
@@ -67,19 +67,19 @@ class TestGetUser:
 @pytest.mark.asyncio
 class TestPostUser:
     async def test_post_user(self, client):
-        user = UserFactory.create_user()
+        user = UserFactory.gen_user()
         resp = await client.post("/users", json={"name": user.name, "password": user.password})
         assert resp.status_code == status.HTTP_201_CREATED
 
     async def test_post_many_users(self, client):
-        user = UserFactory.create_user()
+        user = UserFactory.gen_user()
         resp = await client.post("/users", json={"name": user.name, "password": user.password})
         assert resp.status_code == status.HTTP_201_CREATED
 
     async def test_post_dulicate_user_name(self, client):
-        user = UserFactory.create_user()
+        user = UserFactory.gen_user()
 
-        await client.post("/users", json={"name": user.name, "password": user.password})
+        await UserFactory.create_user(client, user)
         resp = await client.post("/users", json={"name": user.name, "password": user.password})
         assert resp.status_code == status.HTTP_409_CONFLICT
         assert resp.json() == {"detail": f"Duplicate Username: {user.name}"}
