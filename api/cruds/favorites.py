@@ -5,12 +5,13 @@ from sqlalchemy.future import select
 
 from api.models import favorites as favorite_model
 from api.models import users as user_model
-from api.schemas import favorits as favorite_schema
+from api.schemas import favorites as favorite_schema
 
 
-async def get_all_favorites(db: AsyncSession, user_id) -> List[favorite_schema.Favorite]:
-    favorites = await db.execute(select(favorite_model.Favorite).filter_by(user_id=user_id))
-    return favorites.all()
+async def get_all_favorites(db: AsyncSession, user_id: int) -> List[favorite_model.Favorite]:
+    return (
+        await db.execute(select(favorite_model.Favorite).filter(favorite_model.Favorite.user_id == user_id))
+    ).fetchall()
 
 
 async def create_favorite(
