@@ -23,9 +23,7 @@ async def create_user(db: AsyncSession, user_create: user_schema.UserCreate) -> 
 
 
 async def get_all_users(db: AsyncSession) -> List[user_model.User]:
-    results = await db.execute(
-        select(user_model.User).options(selectinload(user_model.User.tweets))
-    )
+    results = await db.execute(select(user_model.User).options(selectinload(user_model.User.tweets)))
     return results.all()
 
 
@@ -57,3 +55,9 @@ async def update_user(
     await db.refresh(updated)
 
     return updated
+
+
+async def delete_user(db: AsyncSession, deleted: user_model.User) -> None:
+    await db.delete(deleted)
+    await db.commit()
+    return None

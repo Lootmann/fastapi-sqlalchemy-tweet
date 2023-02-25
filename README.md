@@ -48,7 +48,7 @@ classDiagram
   + [x] GET   /users
   + [x] POST  /users
   + [x] GET   /users/:user_id
-  + [ ] PATCH /users
+  + [x] PATCH /users
   + [ ] DEL   /users
 
 * tweets

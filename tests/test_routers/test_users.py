@@ -22,9 +22,7 @@ class TestGetAllUsers:
         _, headers = await login_fixture
 
         user = UserFactory.create_user()
-        await client.post(
-            "/users", json={"name": user.name, "password": user.password}, headers=headers
-        )
+        await client.post("/users", json={"name": user.name, "password": user.password}, headers=headers)
 
         resp = await client.get("/users", headers=headers)
         assert resp.status_code == status.HTTP_200_OK
@@ -87,7 +85,6 @@ class TestPostUser:
         assert resp.json() == {"detail": f"Duplicate Username: {user.name}"}
 
     async def test_post_user_with_invalid_field(self, client):
-        # IMPL: validation - user schema validation
         resp = await client.post("/users", json={"nama": "hoge", "password": "mogege"})
         assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
@@ -106,9 +103,7 @@ class TestUpdateUser:
     async def test_update_user(self, client, login_fixture):
         _, headers = await login_fixture
 
-        resp = await client.patch(
-            "/users", json={"name": "updated", "password": "updated"}, headers=headers
-        )
+        resp = await client.patch("/users", json={"name": "updated", "password": "updated"}, headers=headers)
         assert resp.status_code == status.HTTP_200_OK
 
         # this PATCH changes password, so headers are also changed
@@ -143,3 +138,15 @@ class TestUpdateUser:
         resp = await client.patch("/users", json={"name": "", "password": "small"}, headers=headers)
         assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert resp.json() == {"detail": "Password Length should be longer than 6."}
+
+
+@pytest.mark.asyncio
+class TestDeleteUser:
+    async def test_delete_user(self, client, login_fixture):
+        user, headers = await login_fixture
+        resp = await client.delete("/users", headers=headers)
+        assert resp.status_code == status.HTTP_200_OK
+        assert resp.json() == None
+
+        resp = await client.get("/users", headers=headers)
+        assert resp.status_code == status.HTTP_401_UNAUTHORIZED
