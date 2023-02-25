@@ -1,7 +1,10 @@
 # Simple Twitter Clone
+
+## Links
+
 * [Endpoint Map](https://developer.twitter.com/en/docs/twitter-api/migrate/twitter-api-endpoint-map)
 
-## TODO
+## Todo
 
 * Mermaid
   + いい感じにグラフが書ける js plugin
@@ -99,18 +102,42 @@ CREATE TABLE users (
   + [x] DEL   /tweets/:tweet_id
 
 * likes
-  + [x] GET  /tweets/:tweet_id/likes
-  + [x] POST /tweets/:tweet_id/likes
-  + [x] DEL  /tweets/:tweet_id/likes
+  + [x] GET   /likes
+  + [ ] GET   /users/:user_id/likes/tweets
+  + [ ] GET   /tweets/:tweet_id/likes/users (あるツイートをLikeしているUserを取得 - 取得するのはUser)
+  + [x] POST  /tweets/:tweet_id/likes
+  + [x] DEL   /tweets/:tweet_id/likes
 
-## TODO
+### API Design
 
-* [Favorites](https://developer.twitter.com/en/docs/twitter-api/v1/tweets/post-and-engage/api-reference/get-favorites-list)
+[Likes Introduction](https://developer.twitter.com/en/docs/twitter-api/tweets/likes/introduction)
 
-* [Likes](https://developer.twitter.com/en/docs/twitter-api/tweets/likes/migrate/manage-likes-standard-to-twitter-api-v2)
+あるユーザーが Like しているTweetを全部取得 -> 取得したいはTweetsなので
+* `/tweets/users/user_id/likes`
+先頭を tweets にするとどうやっても表現が出来ない 修正
+* `/users/:user_id/likes/tweets`
 
-なんと Favorites は古いAPIだったことが判明
-現在は Likes というAPIに変わっておった すごい量の変更点が発生
+になるけどださくね ただひと目で分かるURL
+
+次の例
+
+あるツイートがどのユーザからLikeされているかを取得
+* `/tweets/:tweet_id/likes/users`
+
+なんかださい REST な感じがしないのはなぜだろうか
+
+本家 Reference では
+
+> Users who have liked a Tweet - GET /api/v2/tweets/:id/liking_users
+> Tweets liked by a user       - GET /api/v2/users/:id/liked_tweets
+
+最終的に設計したAPIと似たような感じなったが
+
+やっぱり REST ではない感じがする 多分RESTになってない?
+こうやって Endpoint を表現したほうが結局使いやすいのか
+REST に固執するとむしろ分かりづらくなるのかな
+
+## Todo
 
 * [Lists](https://help.twitter.com/ja/using-twitter/twitter-lists)
 
