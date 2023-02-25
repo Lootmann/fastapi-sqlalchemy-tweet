@@ -42,6 +42,37 @@ erDiagram
   tweets ||--o{ favorites : "A Tweet has Many Favorites"
 ```
 
+## Model
+
+```sql
+sqlite> .table
+favorites  tweets     users
+
+CREATE TABLE favorites (
+        id INTEGER NOT NULL,
+        user_id INTEGER NOT NULL,
+        tweet_id INTEGER NOT NULL,
+        PRIMARY KEY (id),
+        FOREIGN KEY(user_id) REFERENCES users (id),
+        FOREIGN KEY(tweet_id) REFERENCES tweets (id)
+);
+
+CREATE TABLE tweets (
+        id INTEGER NOT NULL,
+        message VARCHAR NOT NULL,
+        user_id INTEGER NOT NULL,
+        PRIMARY KEY (id),
+        FOREIGN KEY(user_id) REFERENCES users (id)
+);
+
+CREATE TABLE users (
+        id INTEGER NOT NULL,
+        name VARCHAR NOT NULL,
+        password VARCHAR NOT NULL,
+        PRIMARY KEY (id)
+);
+```
+
 ## Schema
 
 * Pydantic
