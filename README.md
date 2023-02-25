@@ -34,6 +34,11 @@ classDiagram
     +String user_id
     +String tweet_id
   }
+
+  class Lists {
+    +String Id
+    +String user_id
+  }
 ```
 
 ## Schema
@@ -66,11 +71,7 @@ classDiagram
   + [ ] POST /favorites
   + [ ] GET  /favorites/:favorite_id
 
-## Real Twitter API
-
-* searching
-  + https://twitter.com/search?q=nextjs&src=typed_query
-
-* favorite
-  + https://api.twitter.com/graphql/lI07N6Otwv1PhnEgXILM7A/FavoriteTweet
-  + https://api.twitter.com/graphql/ZYKSe-w7KEslx3JhSIk5LA/UnfavoriteTweet
+* lists
+  + [ ] GET  /lists
+  + [ ] POST /lists
+  + [ ] GET  /lists
