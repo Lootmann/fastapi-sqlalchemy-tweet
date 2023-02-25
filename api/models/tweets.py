@@ -15,10 +15,10 @@ class Tweet(Base):
     __tablename__ = "tweets"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    tweet: Mapped[str]
+    message: Mapped[str]
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship(back_populates="tweets")
 
     def __repr__(self) -> str:
-        return f"<Tweet (id, tweet, user_id) = ({self.id}, {self.tweet}, {self.user_id})>"
+        return f"<Tweet (id, message, user_id) = ({self.id}, {self.message}, {self.user_id})>"

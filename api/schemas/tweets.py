@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 class TweetBase(BaseModel):
-    tweet: str
+    message: str
 
     class Config:
         orm_mode = True
@@ -14,6 +14,10 @@ class TweetCreate(TweetBase):
 
 class TweetCreateResponse(TweetBase):
     id: int
+
+
+class TweetUpdate(TweetBase):
+    pass
 
 
 class Tweet(TweetBase):

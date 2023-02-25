@@ -87,6 +87,7 @@ class TestPostUser:
         assert resp.json() == {"detail": f"Duplicate Username: {user.name}"}
 
     async def test_post_user_with_invalid_field(self, client):
+        # IMPL: validation - user schema validation
         resp = await client.post("/users", json={"nama": "hoge", "password": "mogege"})
         assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
@@ -98,3 +99,47 @@ class TestPostUser:
 
         resp = await client.post("/users", json={"password": "magege"})
         assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+
+@pytest.mark.asyncio
+class TestUpdateUser:
+    async def test_update_user(self, client, login_fixture):
+        _, headers = await login_fixture
+
+        resp = await client.patch(
+            "/users", json={"name": "updated", "password": "updated"}, headers=headers
+        )
+        assert resp.status_code == status.HTTP_200_OK
+
+        # this PATCH changes password, so headers are also changed
+        resp = await client.get("users", headers=headers)
+        assert resp.status_code == status.HTTP_401_UNAUTHORIZED
+
+        # re-login
+        new_headers = await create_access_token(client, username="updated", password="updated")
+        resp = await client.get("users", headers=new_headers)
+        assert resp.status_code == status.HTTP_200_OK
+
+    async def test_update_user_which_tests_user_schema_validation(self, client, login_fixture):
+        # test schema validation
+        _, headers = await login_fixture
+
+        resp = await client.patch("/users", json={"name": "", "password": ""}, headers=headers)
+        assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert resp.json() == {"detail": "invalid request body"}
+
+        resp = await client.patch("/users", json={"password": ""}, headers=headers)
+        assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert resp.json() == {"detail": "invalid request body"}
+
+        resp = await client.patch("/users", json={"name": ""}, headers=headers)
+        assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert resp.json() == {"detail": "invalid request body"}
+
+        resp = await client.patch("/users", json={"name": "short", "password": ""}, headers=headers)
+        assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert resp.json() == {"detail": "Username Length should be longer than 6."}
+
+        resp = await client.patch("/users", json={"name": "", "password": "small"}, headers=headers)
+        assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert resp.json() == {"detail": "Password Length should be longer than 6."}

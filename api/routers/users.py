@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, status, Query
+from fastapi import APIRouter, Depends, Query, status
 from fastapi.exceptions import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -35,10 +35,27 @@ async def create_user(user_body: user_schema.UserCreate, db: AsyncSession = Depe
 
 
 @router.get("/users/{user_id}", response_model=user_schema.User, status_code=status.HTTP_200_OK)
-async def get_user_by_id(user_id: int, db: AsyncSession = Depends(get_db)):
+async def get_user_by_id(
+    user_id: int, db: AsyncSession = Depends(get_db), _=Depends(auth_api.get_current_active_user)
+):
     user = await user_api.find_by_id(db, user_id)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=f"User:{user_id} Not Found"
         )
     return user
+
+
+@router.patch(
+    "/users", response_model=user_schema.UserCreateResponse, status_code=status.HTTP_200_OK
+)
+async def update_user(
+    update_body: user_schema.UserUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(auth_api.get_current_active_user),
+):
+    if update_body.name == "" and update_body.password == "":
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=f"invalid request body"
+        )
+    return await user_api.update_user(db, current_user, update_body)

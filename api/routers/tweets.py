@@ -43,4 +43,27 @@ async def get_tweet(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=f"Tweet: {tweet_id} Not Found"
         )
-    return tweet[0]
+    return tweet
+
+
+@router.patch(
+    "/tweets/{tweet_id}",
+    response_model=tweet_schema.Tweet,
+    status_code=status.HTTP_200_OK,
+)
+async def update_tweet(
+    tweet_id: int,
+    tweet_body: tweet_schema.TweetUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(auth_api.get_current_active_user),
+):
+    updated = await tweet_api.find_by_id(db, tweet_id)
+    if not updated:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Tweet: {tweet_id} Not Found"
+        )
+
+    if updated.user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not Authenticated")
+
+    return await tweet_api.update_tweet(db, updated, tweet_body)
