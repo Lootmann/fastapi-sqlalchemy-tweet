@@ -157,3 +157,14 @@ Lists/members (tweet users) があればOKかな
 
 Twitter には message にタグと呼ばれるものを埋め込める
 面倒なので作らない
+
+## Done
+
+* Favorite or Likes?
+  + [Favorites](https://developer.twitter.com/en/docs/twitter-api/v1/tweets/post-and-engage/api-reference/get-favorites-list)
+
+  + [Likes](https://developer.twitter.com/en/docs/twitter-api/tweets/likes/migrate/manage-likes-standard-to-twitter-api-v2)
+
+  なんと Favorites は古いAPIだったことが判明
+  現在は Likes というAPIに変わっておった すごい量の変更点が発生
+  修正完了 実はそこまで大したことは無かった
