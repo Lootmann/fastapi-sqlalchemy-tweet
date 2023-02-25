@@ -10,7 +10,7 @@ from api.db import get_db
 from api.models import tweets as tweet_model
 from api.schemas import tweets as tweet_schema
 
-router = APIRouter()
+router = APIRouter(tags=["tweets"])
 
 
 @router.get("/tweets", response_model=List[tweet_schema.Tweet], status_code=status.HTTP_200_OK)

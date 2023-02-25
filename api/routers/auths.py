@@ -12,13 +12,11 @@ from api.schemas import users as user_schema
 from api.settings import Settings
 
 credential = Settings()
-router = APIRouter()
+router = APIRouter(tags=["auth"])
 
 
 @router.post("/token", response_model=auth_schema.TokenData, status_code=status.HTTP_200_OK)
-async def login_user(
-    db: AsyncSession = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()
-):
+async def login_user(db: AsyncSession = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()):
     found_user: user_schema.User = await auth_api.authenticate_user(
         db, form_data.username, form_data.password
     )
