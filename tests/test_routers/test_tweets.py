@@ -3,7 +3,7 @@ from fastapi import status
 
 from api.schemas import tweets as tweet_schema
 from api.schemas import users as user_schema
-from tests.factories import UserFactory, create_access_token, random_string
+from tests.factories import TweetFactory, UserFactory, create_access_token
 from tests.init_async_client import async_client as client
 
 
@@ -19,7 +19,8 @@ class TestGetAllTweet:
         _, headers = await login_fixture
 
         for _ in range(5):
-            await client.post("/tweets", json={"message": random_string()}, headers=headers)
+            tweet = TweetFactory.gen_tweet()
+            await TweetFactory.create_tweet(client, headers, tweet)
 
         resp = await client.get("/tweets", headers=headers)
         assert resp.status_code == status.HTTP_200_OK
@@ -113,11 +114,11 @@ class TestUpdateTweet:
         tweet_id = resp.json()["id"]
 
         # create new user
-        new_user = UserFactory.create_user()
+        new_user = UserFactory.gen_user()
         assert user.name != new_user.name
         assert user.password != new_user.password
 
-        await client.post("/users", json={"name": new_user.name, "password": new_user.password})
+        await UserFactory.create_user(client, new_user)
         new_headers = await create_access_token(client, new_user.name, new_user.password)
 
         # update tweet
@@ -132,8 +133,11 @@ class TestDeleteTweet:
     async def test_delete_tweet(self, client, login_fixture):
         _, headers = await login_fixture
 
-        resp = await client.post("/tweets", json={"message": "I'm here :^)"}, headers=headers)
+        tweet = TweetFactory.gen_tweet()
+        resp = await TweetFactory.create_tweet(client, headers, tweet)
         assert resp.status_code == status.HTTP_201_CREATED
+
+        # keep original tweet
         original_tweet = tweet_schema.TweetCreateResponse(**resp.json())
 
         resp = await client.get("/tweets", headers=headers)
@@ -163,8 +167,8 @@ class TestDeleteTweet:
         original_tweet = tweet_schema.TweetCreateResponse(**resp.json())
 
         # create new user
-        user = UserFactory.create_user()
-        resp = await client.post("/users", json={"name": user.name, "password": user.password})
+        user = UserFactory.gen_user()
+        resp = await UserFactory.create_user(client, user)
         assert resp.status_code == status.HTTP_201_CREATED
         new_headers = await create_access_token(client, user.name, user.password)
 
