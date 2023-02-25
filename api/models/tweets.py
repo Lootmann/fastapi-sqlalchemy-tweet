@@ -11,13 +11,13 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from api.db import Base
-from api.models.favorites import Favorite
+from api.models.likes import Like
 
 
 class Tweet(Base):
     """
     Tweet : User = n : 1
-    Tweet : Fav  = 1 : n
+    Tweet : Like = 1 : n
     """
 
     __tablename__ = "tweets"
@@ -28,7 +28,7 @@ class Tweet(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship("User", back_populates="tweets")
 
-    favorites: Mapped[List["Favorite"]] = relationship("Favorite", back_populates="tweet")
+    favorites: Mapped[List["Like"]] = relationship("Favorite", back_populates="tweet")
 
     def __repr__(self) -> str:
         return f"<Tweet (id, message, user_id) = ({self.id}, {self.message}, {self.user_id})>"

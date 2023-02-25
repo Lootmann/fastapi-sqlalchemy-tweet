@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 
-from api.models.favorites import Base as FavoriteBase
+from api.models.likes import Base as LikeBase
 from api.models.tweets import Base as TweetBase
 from api.models.users import Base as UserBase
 
@@ -9,8 +9,8 @@ engine = create_engine(DB_URL, echo=True)
 
 
 def reset_database():
-    FavoriteBase.metadata.drop_all(bind=engine)
-    FavoriteBase.metadata.create_all(bind=engine)
+    LikeBase.metadata.drop_all(bind=engine)
+    LikeBase.metadata.create_all(bind=engine)
 
     TweetBase.metadata.drop_all(bind=engine)
     TweetBase.metadata.create_all(bind=engine)
