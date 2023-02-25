@@ -1,14 +1,22 @@
 from sqlalchemy import create_engine
 
-from api.db import Base
+from api.models.favorites import Base as FavoriteBase
+from api.models.tweets import Base as TweetBase
+from api.models.users import Base as UserBase
 
 DB_URL = "sqlite:///dev.db"
 engine = create_engine(DB_URL, echo=True)
 
 
 def reset_database():
-    Base.metadata.drop_all(bind=engine)
-    Base.metadata.create_all(bind=engine)
+    FavoriteBase.metadata.drop_all(bind=engine)
+    FavoriteBase.metadata.create_all(bind=engine)
+
+    TweetBase.metadata.drop_all(bind=engine)
+    TweetBase.metadata.create_all(bind=engine)
+
+    UserBase.metadata.drop_all(bind=engine)
+    UserBase.metadata.create_all(bind=engine)
 
 
 if __name__ == "__main__":
