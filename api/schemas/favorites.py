@@ -1,6 +1,4 @@
-from typing import List
-
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field
 
 
 class FavoriteBase(BaseModel):
@@ -18,7 +16,7 @@ class FavoriteCreateResponse(FavoriteCreate):
     id: int
 
 
-class Favorite(BaseModel):
+class Favorite(FavoriteBase):
     id: int
     user_id: int
     tweet_id: int
