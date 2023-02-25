@@ -55,6 +55,6 @@ async def update_user(
 
 @router.delete("/users", response_model=None, status_code=status.HTTP_200_OK)
 async def delete_user(
-    db: AsyncSession = Depends(get_db), curren_user=Depends(auth_api.get_current_active_user)
+    db: AsyncSession = Depends(get_db), current_user=Depends(auth_api.get_current_active_user)
 ):
-    return await user_api.delete_user(db, curren_user)
+    return await user_api.delete_user(db, current_user)

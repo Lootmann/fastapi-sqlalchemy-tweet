@@ -1,6 +1,7 @@
 from random import choice, randint
 from string import ascii_letters
 
+from api.schemas import likes as like_schema
 from api.schemas import tweets as tweet_schema
 from api.schemas import users as user_schema
 from tests.init_async_client import async_client as client
@@ -33,9 +34,9 @@ class UserFactory:
         create user with inserting db
 
         Args:
-            client   : {AsyncSession}
-            headers  : {dict} - "Authorization": "Bearer xxx"
-            user_body: {schema.UserCreate}
+            client (AsyncSession)
+            headers (dict token)     : Bearer JWT Token
+            user_body (schema) : {schema.UserCreate}
 
         Return:
             resp: tweets post response
@@ -55,11 +56,28 @@ class TweetFactory:
         create tweet with inserting db
 
         Args:
-            client    : {AsyncSession}
-            headers   : {dict} - "Authorization": "Bearer xxx"
-            tweet_body: {schema.TweetCreate}
+            client (AsyncSession)
+            headers (dict token) : Bearer JWT Token
+            tweet_body (schema)  : TweetCreate schema
 
         Return:
             resp: tweets post response
         """
         return await client.post("/tweets", json={"message": tweet_body.message}, headers=headers)
+
+
+class LikeFactory:
+    @staticmethod
+    async def create_like(client, headers: dict, tweet_id: int):
+        """
+        create like
+
+        Args:
+            client (AsyncSession)
+            headers (dict token) : Bearer JWT Token
+            tweet_id(int)        : Tweet id
+
+        Return:
+            resp: like post response
+        """
+        return await client.post(f"/tweets/{tweet_id}/likes", headers=headers)

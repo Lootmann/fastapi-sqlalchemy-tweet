@@ -31,24 +31,24 @@ erDiagram
     text message
   }
 
-  favorites {
+  likes {
     int id       PK
     int tweet_id FK
     int user_id  FK
   }
 
-  users ||--o{ tweets    : "A User has Many Tweets"
-  users ||--o{ favorites : "A User has Many Favorites"
-  tweets ||--o{ favorites : "A Tweet has Many Favorites"
+  users  ||--o{ tweets : "A User has Many Tweets"
+  users  ||--o{ likes  : "A User has Many Likes"
+  tweets ||--o{ likes  : "A Tweet has Many Likes"
 ```
 
 ## Model
 
 ```sql
 sqlite> .table
-favorites  tweets     users
+likes tweets     users
 
-CREATE TABLE favorites (
+CREATE TABLE likes (
         id INTEGER NOT NULL,
         user_id INTEGER NOT NULL,
         tweet_id INTEGER NOT NULL,
@@ -98,14 +98,19 @@ CREATE TABLE users (
   + [x] PATCH /tweets/:tweet_id
   + [x] DEL   /tweets/:tweet_id
 
-* favorites
-  + [ ] GET  /favorites
-  + [ ] POST /favorites
-  + [ ] DEL  /favorites
+* likes
+  + [x] GET  /tweets/:tweet_id/likes
+  + [x] POST /tweets/:tweet_id/likes
+  + [x] DEL  /tweets/:tweet_id/likes
 
 ## TODO
 
 * [Favorites](https://developer.twitter.com/en/docs/twitter-api/v1/tweets/post-and-engage/api-reference/get-favorites-list)
+
+* [Likes](https://developer.twitter.com/en/docs/twitter-api/tweets/likes/migrate/manage-likes-standard-to-twitter-api-v2)
+
+なんと Favorites は古いAPIだったことが判明
+現在は Likes というAPIに変わっておった すごい量の変更点が発生
 
 * [Lists](https://help.twitter.com/ja/using-twitter/twitter-lists)
 
