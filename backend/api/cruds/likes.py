@@ -9,19 +9,25 @@ from api.models.users import User as UserModel
 
 
 async def get_all_likes(db: AsyncSession, user_id: int) -> List[LikeModel]:
-    return (await db.execute(select(LikeModel).filter(LikeModel.user_id == user_id))).fetchall()
+    stmt = await db.execute(select(LikeModel).filter(LikeModel.user_id == user_id))
+    return stmt.scalars().all()
 
 
-async def find_by_user_id_and_tweet_id(db: AsyncSession, user_id: int, tweet_id: int) -> LikeModel | None:
-    like = (
-        await db.execute(
-            select(LikeModel).filter(LikeModel.user_id == user_id).filter(LikeModel.tweet_id == tweet_id)
-        )
-    ).first()
-    return like[0] if like else None
+async def find_by_user_id_and_tweet_id(
+    db: AsyncSession, user_id: int, tweet_id: int
+) -> LikeModel | None:
+    res = await db.execute(
+        select(LikeModel)
+        .filter(LikeModel.user_id == user_id)
+        .filter(LikeModel.tweet_id == tweet_id)
+    )
+    like = res.scalar()
+    return like if like else None
 
 
-async def create_like(db: AsyncSession, tweet: TweetModel, current_user: UserModel) -> LikeModel:
+async def create_like(
+    db: AsyncSession, tweet: TweetModel, current_user: UserModel
+) -> LikeModel:
     like = LikeModel(tweet_id=tweet.id, user_id=current_user.id)
 
     tweet.likes.append(like)

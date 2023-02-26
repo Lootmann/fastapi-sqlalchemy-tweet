@@ -4,7 +4,7 @@
 
 * [Endpoint Map](https://developer.twitter.com/en/docs/twitter-api/migrate/twitter-api-endpoint-map)
 
-## Todo
+## Memo
 
 * Mermaid
   + いい感じにグラフが書ける js plugin
@@ -13,11 +13,6 @@
 * fastapi
   + query parameters
     - https://fastapi.tiangolo.com/ja/tutorial/query-params-str-validations/
-
-* RESTful Design
-  + Goto wiki
-
-* GET /tweets/:tweet_id/likes/users (あるツイートをLikeしているUserを取得 - 取得するのはUser)
 
 ## ER Diagram
 
@@ -110,72 +105,66 @@ CREATE TABLE users (
   + [x] POST  /tweets/:tweet_id/likes
   + [x] DEL   /tweets/:tweet_id/likes
 
-### API Design
-
 ## Todo
 
 * [Lists](https://help.twitter.com/ja/using-twitter/twitter-lists)
 
-> リストを使用することで、タイムラインに表示するツイートをカスタマイズ、整理、優先順位付けできます
->
-> Twitterで他のユーザーが作成したリストに参加したり、自分のアカウントから、グループ、トピック、
->
-> または興味関心の対象別に、他のアカウントのリストを作成したりできます
->
-> リストタイムラインには、リストに登録されたアカウントのツイートのみが表示されます
->
-> また、お気に入りのリストを自分のタイムラインの上部に固定しておけば
->
-> 重要なアカウントからのツイートを見逃すこともありません
+> リストを使用することで、タイムラインに表示するツイートをカスタマイズ、整理、優先順位付けできます<br>
+> Twitterで他のユーザーが作成したリストに参加したり、自分のアカウントから、グループ、トピック、<br>
+> または興味関心の対象別に、他のアカウントのリストを作成したりできます<br>
+> リストタイムラインには、リストに登録されたアカウントのツイートのみが表示されます <br>
+> また、お気に入りのリストを自分のタイムラインの上部に固定しておけば <br>
+> 重要なアカウントからのツイートを見逃すこともありません<br>
 
-こんなに複雑なものはいらない
-
-Lists/members (tweet users) があればOKかな
-
-そこに登録されている members のツイートを一覧で表示できるみたいな機能でOK
+こんなに複雑なものはいらない<br>
+Lists/members (tweet users) があればOKかな<br>
+そこに登録されている members のツイートを一覧で表示できるみたいな機能でOK<br>
 
 * Tags
 
-Twitter には message にタグと呼ばれるものを埋め込める
-
-面倒なので作らない
+Twitter には message にタグと呼ばれるものを埋め込める<br>
+面倒なので作らない<br>
 
 ## Done
 
-* Favorite or Likes?
-  + [Favorites](https://developer.twitter.com/en/docs/twitter-api/v1/tweets/post-and-engage/api-reference/get-favorites-list)
+### Favorite or Likes?
 
-  + [Likes](https://developer.twitter.com/en/docs/twitter-api/tweets/likes/migrate/manage-likes-standard-to-twitter-api-v2)
+* [Favorites](https://developer.twitter.com/en/docs/twitter-api/v1/tweets/post-and-engage/api-reference/get-favorites-list)
 
-  なんと Favorites は古いAPIだったことが判明
+* [Likes](https://developer.twitter.com/en/docs/twitter-api/tweets/likes/migrate/manage-likes-standard-to-twitter-api-v2)
 
-  現在は Likes というAPIに変わっておった すごい量の変更点が発生
+なんと Favorites は古いAPIだったことが判明<br>
+現在は Likes というAPIに変わっておった すごい量の変更点が発生<br>
+修正完了 実はそこまで大したことは無かった<br>
 
-  修正完了 実はそこまで大したことは無かった
+### 突然 Docker Compose 化
 
-* 突然 Docker Compose 化
-  + [x] connection psql with async
-  + [x] test with asycn psql
-  + [x] migrate docker container psql
-  + [x] API test on Web Browser
-    - [x] web broswer 上での login すると/token だけが `Not Found` エラーに!
-    - test は40くらい 全部通っている auth 系も含めて
-    - 1. httpie POST /token ... OK Bearer 取得できた (???)
-    - 2. Web Broswer 再起動 -> authorize login 可能になった
-    - 意味がわからないが修正完了
-  + Compose 化すべて完了 3, 4 時間かかってないか
-  + 理由が判明 単純に `/token` でパスワード認証失敗すると `HTTP_404` が出るが
-  + Detail="User Not Found" が出力されずに "Error: Not Found" という表示しか無いため
-  + 勝手に URL に API が飛んでないと勘違いしたというお話
-  + というか status 404 は Not Foundなのでそもそも raise HTTPException がおかしいという話
-  + Login認証失敗したら普通は 401 修正します 完全に終了
+* [x] connection psql with async
+* [x] test with asycn psql
+* [x] migrate docker container psql
+* [x] API test on Web Browser
+  + [x] web broswer 上での login すると/token だけが `Not Found` エラーに!
+  + test は40くらい 全部通っている auth 系も含めて
+  + 1. httpie POST /token ... OK Bearer 取得できた (???)
+  + 2. Web Broswer 再起動 -> authorize login 可能になった
+  + 意味がわからないが修正完了
 
-* [Likes Introduction](https://developer.twitter.com/en/docs/twitter-api/tweets/likes/introduction)
+Compose 化すべて完了 3, 4 時間かかってないか<br>
+理由が判明 単純に `/token` でパスワード認証失敗すると `HTTP_404` が出るが<br>
+Detail="User Not Found" が出力されずに "Error: Not Found" という表示しか無いため<br>
+勝手に URL に API が飛んでないと勘違いしたというお話<br>
+というか status 404 は Not Foundなのでそもそも raise HTTPException がおかしいという話<br>
+Login認証失敗したら普通は 401 修正します 完全に終了<br>
 
-  + [x] あるユーザーが Like しているTweetを全部取得
-    - GET `/tweets/:tweet_id/likes/users`
+### Likes
 
-  + [x] GET ある Tweet に Like している User を全取得
-    - GET `/tweets/:tweet_id/likes/users`
-    - どうしてもRelationがうまくとれない
-    - ので超ださいけど User -> User.id.in_(user_ids) で取得することに
+[Likes Introduction](https://developer.twitter.com/en/docs/twitter-api/tweets/likes/introduction)
+
+* [x] あるユーザーが Like しているTweetを全部取得
+  + GET `/users/:user_id/likes/tweets`
+
+* [x] GET ある Tweet に Like している User を全取得
+  + GET `/tweets/:tweet_id/likes/users`
+
+どうしてもRelationがうまくとれない<br>
+ので超ださいけど User -> User.id.in_(user_ids) で取得することに<br>
