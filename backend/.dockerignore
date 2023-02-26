@@ -1,3 +1,5 @@
-dev.db
-tests
-htmlcov
+*.db
+tests/
+htmlcov/
+venv/
+prof/
