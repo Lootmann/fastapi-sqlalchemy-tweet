@@ -4,15 +4,14 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    env_file: ./backend/.env
 
-    working_dir: /api/
+    working_dir: /usr/code/
     command: python3.10 -m uvicorn api.main:app --reload --host 0.0.0.0 --port 8888
 
     volumes:
       - type: bind
         source: ./backend
-        target: /api
+        target: /usr/code/
     ports:
       - target: 8888
         published: 8888
@@ -25,7 +24,7 @@ services:
     build:
       context: ./db
       dockerfile: Dockerfile
-    env_file: ./db/.env
+    env_file: .env
     volumes:
       - type: volume
         source: postgres-volume

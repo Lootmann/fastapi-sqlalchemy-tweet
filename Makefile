@@ -17,7 +17,7 @@ restart:
 	docker compose restart
 
 migrate:
-	docker compose exec app python3.10 api.migration_db.py
+	docker compose exec app python3 -m api.migrate_db
 
 login-app:
 	docker exec -it fastapi-container /bin/bash
