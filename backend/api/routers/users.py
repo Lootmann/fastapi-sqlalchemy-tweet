@@ -12,49 +12,70 @@ from api.schemas import users as user_schema
 router = APIRouter(tags=["users"])
 
 
-@router.get("/users", response_model=List[user_schema.User], status_code=status.HTTP_200_OK)
+@router.get(
+    "/users", response_model=List[user_schema.User], status_code=status.HTTP_200_OK
+)
 async def get_all_users(
     db: AsyncSession = Depends(get_db),
     _=Depends(auth_api.get_current_active_user),
 ):
-    results = await user_api.get_all_users(db)
-
-    return [r[0] for r in results]
+    return await user_api.get_all_users(db)
 
 
-@router.post("/users", response_model=user_schema.UserCreateResponse, status_code=status.HTTP_201_CREATED)
-async def create_user(user_body: user_schema.UserCreate, db: AsyncSession = Depends(get_db)):
+@router.post(
+    "/users",
+    response_model=user_schema.UserCreateResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_user(
+    user_body: user_schema.UserCreate, db: AsyncSession = Depends(get_db)
+):
     found = await user_api.find_by_name(db, user_body.name)
     if found is not None:
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT, detail=f"Duplicate Username: {user_body.name}"
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Duplicate Username: {user_body.name}",
         )
     return await user_api.create_user(db, user_body)
 
 
-@router.get("/users/{user_id}", response_model=user_schema.User, status_code=status.HTTP_200_OK)
+@router.get(
+    "/users/{user_id}", response_model=user_schema.User, status_code=status.HTTP_200_OK
+)
 async def get_user_by_id(
-    user_id: int, db: AsyncSession = Depends(get_db), _=Depends(auth_api.get_current_active_user)
+    user_id: int,
+    db: AsyncSession = Depends(get_db),
+    _=Depends(auth_api.get_current_active_user),
 ):
     user = await user_api.find_by_id(db, user_id)
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User:{user_id} Not Found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"User:{user_id} Not Found"
+        )
     return user
 
 
-@router.patch("/users", response_model=user_schema.UserCreateResponse, status_code=status.HTTP_200_OK)
+@router.patch(
+    "/users",
+    response_model=user_schema.UserCreateResponse,
+    status_code=status.HTTP_200_OK,
+)
 async def update_user(
     update_body: user_schema.UserUpdate,
     db: AsyncSession = Depends(get_db),
     current_user=Depends(auth_api.get_current_active_user),
 ):
     if update_body.name == "" and update_body.password == "":
-        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=f"invalid request body")
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"invalid request body",
+        )
     return await user_api.update_user(db, current_user, update_body)
 
 
 @router.delete("/users", response_model=None, status_code=status.HTTP_200_OK)
 async def delete_user(
-    db: AsyncSession = Depends(get_db), current_user=Depends(auth_api.get_current_active_user)
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(auth_api.get_current_active_user),
 ):
     return await user_api.delete_user(db, current_user)

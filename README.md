@@ -14,6 +14,10 @@
   + query parameters
     - https://fastapi.tiangolo.com/ja/tutorial/query-params-str-validations/
 
+* Black line length
+  + --line-length=88 Black Official の line length になぜか変更してみる
+  + 今までは 100 行
+
 ## ER Diagram
 
 ```mermaid
