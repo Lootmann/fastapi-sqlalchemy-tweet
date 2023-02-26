@@ -11,6 +11,13 @@ class TweetBase(BaseModel):
 class TweetCreate(TweetBase):
     pass
 
+    class Config:
+        schema_extra = {
+            "example": {
+                "message": "new tweet :^)",
+            }
+        }
+
 
 class TweetCreateResponse(TweetBase):
     id: int

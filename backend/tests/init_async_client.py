@@ -7,6 +7,7 @@ from api.db import Base, get_db
 from api.main import app
 
 ASYNC_DB_URL = "sqlite+aiosqlite:///:memory:"
+async_engine = create_async_engine(ASYNC_DB_URL, echo=True)
 
 
 @pytest_asyncio.fixture

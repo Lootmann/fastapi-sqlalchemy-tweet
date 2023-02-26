@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from api.models.likes import Like as LikeModel
+from api.models.tweets import Tweet as TweetModel
 from api.models.users import User as UserModel
 
 
@@ -20,10 +21,14 @@ async def find_by_user_id_and_tweet_id(db: AsyncSession, user_id: int, tweet_id:
     return like[0] if like else None
 
 
-async def create_like(db: AsyncSession, tweet_id: int, current_user: UserModel) -> LikeModel:
-    like = LikeModel(tweet_id=tweet_id, user_id=current_user.id)
+async def create_like(db: AsyncSession, tweet: TweetModel, current_user: UserModel) -> LikeModel:
+    like = LikeModel(tweet_id=tweet.id, user_id=current_user.id)
 
-    db.add(like)
+    tweet.likes.append(like)
+    current_user.likes.append(like)
+
+    db.add(tweet)
+    db.add(current_user)
     await db.commit()
     await db.refresh(like)
 

@@ -39,7 +39,7 @@ class TestLogin:
             data={"username": user.name, "password": "moge"},
             headers={"content-type": "application/x-www-form-urlencoded"},
         )
-        assert resp.status_code == status.HTTP_404_NOT_FOUND
+        assert resp.status_code == status.HTTP_401_UNAUTHORIZED
 
         # login by wrong name
         resp = await client.post(
@@ -47,7 +47,7 @@ class TestLogin:
             data={"username": "hogehoge", "password": user.password},
             headers={"content-type": "application/x-www-form-urlencoded"},
         )
-        assert resp.status_code == status.HTTP_404_NOT_FOUND
+        assert resp.status_code == status.HTTP_401_UNAUTHORIZED
 
         # login by wrong both
         resp = await client.post(
@@ -55,4 +55,4 @@ class TestLogin:
             data={"username": "hogehoge", "password": "mogera"},
             headers={"content-type": "application/x-www-form-urlencoded"},
         )
-        assert resp.status_code == status.HTTP_404_NOT_FOUND
+        assert resp.status_code == status.HTTP_401_UNAUTHORIZED

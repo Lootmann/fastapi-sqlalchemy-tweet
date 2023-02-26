@@ -1,7 +1,10 @@
 # Simple Twitter Clone
+
+## Links
+
 * [Endpoint Map](https://developer.twitter.com/en/docs/twitter-api/migrate/twitter-api-endpoint-map)
 
-## TODO
+## Todo
 
 * Mermaid
   + いい感じにグラフが書ける js plugin
@@ -13,6 +16,8 @@
 
 * RESTful Design
   + Goto wiki
+
+* GET /tweets/:tweet_id/likes/users (あるツイートをLikeしているUserを取得 - 取得するのはUser)
 
 ## ER Diagram
 
@@ -99,18 +104,42 @@ CREATE TABLE users (
   + [x] DEL   /tweets/:tweet_id
 
 * likes
-  + [x] GET  /tweets/:tweet_id/likes
-  + [x] POST /tweets/:tweet_id/likes
-  + [x] DEL  /tweets/:tweet_id/likes
+  + [x] GET   /likes
+  + [x] GET   /users/:user_id/likes/tweets
+  + [ ] GET   /tweets/:tweet_id/likes/users (あるツイートをLikeしているUserを取得 - 取得するのはUser)
+  + [x] POST  /tweets/:tweet_id/likes
+  + [x] DEL   /tweets/:tweet_id/likes
 
-## TODO
+### API Design
 
-* [Favorites](https://developer.twitter.com/en/docs/twitter-api/v1/tweets/post-and-engage/api-reference/get-favorites-list)
+[Likes Introduction](https://developer.twitter.com/en/docs/twitter-api/tweets/likes/introduction)
 
-* [Likes](https://developer.twitter.com/en/docs/twitter-api/tweets/likes/migrate/manage-likes-standard-to-twitter-api-v2)
+あるユーザーが Like しているTweetを全部取得 -> 取得したいはTweetsなので
+* `/tweets/users/user_id/likes`
+先頭を tweets にするとどうやっても表現が出来ない 修正
+* `/users/:user_id/likes/tweets`
 
-なんと Favorites は古いAPIだったことが判明
-現在は Likes というAPIに変わっておった すごい量の変更点が発生
+になるけどださくね ただひと目で分かるURL
+
+次の例
+
+あるツイートがどのユーザからLikeされているかを取得
+* `/tweets/:tweet_id/likes/users`
+
+なんかださい REST な感じがしないのはなぜだろうか
+
+本家 Reference では
+
+> Users who have liked a Tweet - GET /api/v2/tweets/:id/liking_users
+> Tweets liked by a user       - GET /api/v2/users/:id/liked_tweets
+
+最終的に設計したAPIと似たような感じなったが
+
+やっぱり REST ではない感じがする 多分RESTになってない?
+こうやって Endpoint を表現したほうが結局使いやすいのか
+REST に固執するとむしろ分かりづらくなるのかな
+
+## Todo
 
 * [Lists](https://help.twitter.com/ja/using-twitter/twitter-lists)
 
@@ -130,3 +159,30 @@ Lists/members (tweet users) があればOKかな
 
 Twitter には message にタグと呼ばれるものを埋め込める
 面倒なので作らない
+
+## Done
+
+* Favorite or Likes?
+  + [Favorites](https://developer.twitter.com/en/docs/twitter-api/v1/tweets/post-and-engage/api-reference/get-favorites-list)
+
+  + [Likes](https://developer.twitter.com/en/docs/twitter-api/tweets/likes/migrate/manage-likes-standard-to-twitter-api-v2)
+
+  なんと Favorites は古いAPIだったことが判明
+  現在は Likes というAPIに変わっておった すごい量の変更点が発生
+  修正完了 実はそこまで大したことは無かった
+
+* 突然 Docker Compose 化
+  + [x] connection psql with async
+  + [x] test with asycn psql
+  + [x] migrate docker container psql
+  + [x] API test on Web Browser
+    - [x] web broswer 上での login すると/token だけが `Not Found` エラーに!
+    - test は40くらい 全部通っている auth 系も含めて
+    - 1. httpie POST /token ... OK Bearer 取得できた (???)
+    - 2. Web Broswer 再起動 -> authorize login 可能になった
+    - 意味がわからないが修正完了
+  + Compose 化すべて完了 3, 4 時間かかってないか
+  + 理由が判明 単純に `/token` でパスワード認証失敗すると `HTTP_404` が出るが
+  + Detail="User Not Found" が出力されずに "Error: Not Found" という表示しか無いため
+  + 勝手に URL に API が飛んでないと勘違いしたというお話
+  + Login認証失敗して 404 はちょっとおかしいので 401 に修正します 完全に終了
