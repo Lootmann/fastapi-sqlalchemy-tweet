@@ -2,28 +2,35 @@ services:
   app:
     container_name: fastapi-contianer
     build:
-      context: ./dockerfile
-      dockerfile: Dockerfile.fastapi
+      context: ./backend
+      dockerfile: Dockerfile
     env_file: ./backend/.env
 
-    command: python3.10 -m uvicorn main:app --reload --host 0.0.0.0 --port 8888
+    working_dir: /code/
+    command: python3.10 -m uvicorn api.main:app --reload --host 0.0.0.0 --port 8888
+
     volumes:
       - type: bind
-        target: .
-        source: /code/
+        source: ./backend
+        target: /code
     ports:
       - target: 8888
         published: 8888
+    depends_on:
+      db:
+        condition: service_started
 
   db:
     build:
-      context: ./dockerfile
-      dockerfile: Dockerfile.postgresql
+      context: ./db
+      dockerfile: Dockerfile
     env_file: ./db/.env
+
     volumes:
       - type: volume
         source: test-db
         target: /var/lib/postgresql/data
+
     ports:
       - published: 5432
         target: 5432
