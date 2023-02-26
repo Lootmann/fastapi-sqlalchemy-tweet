@@ -115,8 +115,11 @@ CREATE TABLE users (
 [Likes Introduction](https://developer.twitter.com/en/docs/twitter-api/tweets/likes/introduction)
 
 あるユーザーが Like しているTweetを全部取得 -> 取得したいはTweetsなので
+
 * `/tweets/users/user_id/likes`
+
 先頭を tweets にするとどうやっても表現が出来ない 修正
+k
 * `/users/:user_id/likes/tweets`
 
 になるけどださくね ただひと目で分かるURL
@@ -124,6 +127,7 @@ CREATE TABLE users (
 次の例
 
 あるツイートがどのユーザからLikeされているかを取得
+
 * `/tweets/:tweet_id/likes/users`
 
 なんかださい REST な感じがしないのはなぜだろうか
@@ -133,10 +137,12 @@ CREATE TABLE users (
 > Users who have liked a Tweet - GET /api/v2/tweets/:id/liking_users
 > Tweets liked by a user       - GET /api/v2/users/:id/liked_tweets
 
-最終的に設計したAPIと似たような感じなったが
+自分で設計したAPIと似たような感じにはなっていたが
 
 やっぱり REST ではない感じがする 多分RESTになってない?
+
 こうやって Endpoint を表現したほうが結局使いやすいのか
+
 REST に固執するとむしろ分かりづらくなるのかな
 
 ## Todo
@@ -144,13 +150,19 @@ REST に固執するとむしろ分かりづらくなるのかな
 * [Lists](https://help.twitter.com/ja/using-twitter/twitter-lists)
 
 > リストを使用することで、タイムラインに表示するツイートをカスタマイズ、整理、優先順位付けできます
+>
 > Twitterで他のユーザーが作成したリストに参加したり、自分のアカウントから、グループ、トピック、
+>
 > または興味関心の対象別に、他のアカウントのリストを作成したりできます
+>
 > リストタイムラインには、リストに登録されたアカウントのツイートのみが表示されます
+>
 > また、お気に入りのリストを自分のタイムラインの上部に固定しておけば
-> 重要なアカウントからのツイートを見逃すこともありません。
+>
+> 重要なアカウントからのツイートを見逃すこともありません
 
 こんなに複雑なものはいらない
+
 Lists/members (tweet users) があればOKかな
 
 そこに登録されている members のツイートを一覧で表示できるみたいな機能でOK
@@ -158,6 +170,7 @@ Lists/members (tweet users) があればOKかな
 * Tags
 
 Twitter には message にタグと呼ばれるものを埋め込める
+
 面倒なので作らない
 
 ## Done
@@ -168,7 +181,9 @@ Twitter には message にタグと呼ばれるものを埋め込める
   + [Likes](https://developer.twitter.com/en/docs/twitter-api/tweets/likes/migrate/manage-likes-standard-to-twitter-api-v2)
 
   なんと Favorites は古いAPIだったことが判明
+
   現在は Likes というAPIに変わっておった すごい量の変更点が発生
+
   修正完了 実はそこまで大したことは無かった
 
 * 突然 Docker Compose 化
