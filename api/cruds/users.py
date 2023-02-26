@@ -1,8 +1,8 @@
 from typing import List
 
+from sqlalchemy import select
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
 
 from api.cruds import auths as auth_api
@@ -42,9 +42,14 @@ async def find_by_id(db: AsyncSession, user_id: int) -> UserModel | None:
 
 
 async def find_by_name(db: AsyncSession, username: str) -> UserModel:
-    result: Result = await db.execute(select(UserModel).filter_by(name=username))
-    user = result.first()
-    return user[0] if user else None
+    result: Result = await db.execute(
+        select(UserModel)
+        .filter_by(name=username)
+        .options(selectinload(UserModel.tweets))
+        .options(selectinload(UserModel.likes))
+    )
+    user = result.scalars().first()
+    return user if user else None
 
 
 async def update_user(db: AsyncSession, updated: UserModel, user_body: user_schema.UserUpdate) -> UserModel:
