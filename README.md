@@ -17,6 +17,12 @@
 * RESTful Design
   + Goto wiki
 
+* 突然 Docker Compose 化!
+  + 成功! pytest, coverage, profile, web browser, async test とりあえず全部動いた
+  + と思ったらasync test やっていない！ まだSQliteのまま！
+
+* GET /tweets/:tweet_id/likes/users (あるツイートをLikeしているUserを取得 - 取得するのはUser)
+
 ## ER Diagram
 
 ```mermaid
