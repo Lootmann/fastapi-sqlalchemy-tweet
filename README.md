@@ -4,7 +4,7 @@
 
 * [Endpoint Map](https://developer.twitter.com/en/docs/twitter-api/migrate/twitter-api-endpoint-map)
 
-## Todo
+## Memo
 
 * Mermaid
   + いい感じにグラフが書ける js plugin
@@ -13,11 +13,6 @@
 * fastapi
   + query parameters
     - https://fastapi.tiangolo.com/ja/tutorial/query-params-str-validations/
-
-* RESTful Design
-  + Goto wiki
-
-* GET /tweets/:tweet_id/likes/users (あるツイートをLikeしているUserを取得 - 取得するのはUser)
 
 ## ER Diagram
 
