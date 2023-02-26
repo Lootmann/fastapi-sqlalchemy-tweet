@@ -29,8 +29,8 @@ login-db:
 test:
 	docker compose exec app python3.10 -m pytest -svv
 
-s:
-	docker compose exec app python3.10 -m pytest -svv ./tests/test_routers/test_users.py
+re:
+	docker compose exec app python3.10 -m pytest -svv --lf
 
 # preformance
 measure:
@@ -38,6 +38,9 @@ measure:
 
 cov:
 	docker compose exec app python3.10 -m pytest --cov --cov-report=html
+
+report:
+	google-chrome ./backend/htmlcov/index.html
 
 profile:
 	docker compose exec app python3.10 -m pytest --profile-svg
