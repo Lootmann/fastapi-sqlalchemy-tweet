@@ -41,7 +41,9 @@ class UserFactory:
         Return:
             resp: tweets post response
         """
-        return await client.post("/users", json={"name": user_body.name, "password": user_body.password})
+        return await client.post(
+            "/users", json={"name": user_body.name, "password": user_body.password}
+        )
 
 
 class TweetFactory:
@@ -63,7 +65,9 @@ class TweetFactory:
         Return:
             resp: tweets post response
         """
-        return await client.post("/tweets", json={"message": tweet_body.message}, headers=headers)
+        return await client.post(
+            "/tweets", json={"message": tweet_body.message}, headers=headers
+        )
 
 
 class LikeFactory:

@@ -15,14 +15,20 @@ credential = Settings()
 router = APIRouter(tags=["auth"])
 
 
-@router.post("/token", response_model=auth_schema.TokenData, status_code=status.HTTP_200_OK)
-async def login_user(db: AsyncSession = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()):
+@router.post(
+    "/token", response_model=auth_schema.TokenData, status_code=status.HTTP_200_OK
+)
+async def login_user(
+    db: AsyncSession = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()
+):
     found_user: user_schema.User = await auth_api.authenticate_user(
         db, form_data.username, form_data.password
     )
 
     if not found_user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User Not Found")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="User Not Found"
+        )
 
     access_token_expires = timedelta(minutes=credential.access_token_expire_minutes)
     data = {"sub": found_user.name}

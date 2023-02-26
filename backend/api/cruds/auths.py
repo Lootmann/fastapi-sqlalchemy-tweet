@@ -36,7 +36,9 @@ async def get_current_user(
     )
 
     try:
-        payload = jwt.decode(token, credential.secret_key, algorithms=[credential.algorithm])
+        payload = jwt.decode(
+            token, credential.secret_key, algorithms=[credential.algorithm]
+        )
         username: str = payload.get("sub", None)
 
         if username is None:
@@ -54,7 +56,9 @@ async def get_current_user(
     return user
 
 
-async def get_current_active_user(current_user: user_model.User = Depends(get_current_user)):
+async def get_current_active_user(
+    current_user: user_model.User = Depends(get_current_user),
+):
     # TODO: definition active user
     return current_user
 
@@ -66,12 +70,16 @@ async def create_access_token(data: dict, expired_delta: timedelta | None = None
         expire = datetime.utcnow() + timedelta(minutes=15)
 
     data.update({"exp": expire})
-    encoded_jwt = jwt.encode(data, credential.secret_key, algorithm=credential.algorithm)
+    encoded_jwt = jwt.encode(
+        data, credential.secret_key, algorithm=credential.algorithm
+    )
 
     return encoded_jwt
 
 
-async def authenticate_user(db: AsyncSession, username: str, password: str) -> user_model.User:
+async def authenticate_user(
+    db: AsyncSession, username: str, password: str
+) -> user_model.User:
     user = await user_api.find_by_name(db, username)
 
     if not user:

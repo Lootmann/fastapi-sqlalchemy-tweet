@@ -68,7 +68,9 @@ class TestGetLikingTweets:
             resp = await UserFactory.create_user(client, new_user)
             assert resp.status_code == status.HTTP_201_CREATED
 
-            new_headers = await create_access_token(client, new_user.name, new_user.password)
+            new_headers = await create_access_token(
+                client, new_user.name, new_user.password
+            )
             resp = await client.post(f"/tweets/{tweet_id}/likes", headers=new_headers)
             assert resp.status_code == status.HTTP_201_CREATED
 
