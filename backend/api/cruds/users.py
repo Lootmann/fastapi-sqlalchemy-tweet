@@ -30,14 +30,14 @@ async def get_all_users(db: AsyncSession) -> List[UserModel]:
         .options(selectinload(UserModel.tweets))
         .options(selectinload(UserModel.likes))
     )
-    return results.all()
+    return results.scalars().all()
 
 
 async def get_all_users_which_likes_tweet(
     db: AsyncSession, tweet_id: int
 ) -> List[UserModel]:
     # FIXME: stmt = select(User).join(User.likes).join(Like.tweet).where(Tweet.id == tweet_id)
-    # Doesnt work ... D:
+    # Why doesnt work ... D:
 
     # get like
     results = await db.execute(select(LikeModel).where(LikeModel.tweet_id == tweet_id))
@@ -62,8 +62,7 @@ async def find_by_id(db: AsyncSession, user_id: int) -> UserModel | None:
     result: Result = await db.execute(
         select(UserModel).filter_by(id=user_id).options(selectinload(UserModel.tweets))
     )
-    user = result.first()
-    return user[0] if user else None
+    return result.scalar()
 
 
 async def find_by_name(db: AsyncSession, username: str) -> UserModel | None:
