@@ -3,6 +3,7 @@ from typing import List
 from fastapi import HTTPException, status
 from pydantic import BaseModel, Field, validator
 
+from api.schemas.likes import Like
 from api.schemas.tweets import Tweet
 
 
@@ -77,6 +78,7 @@ class User(BaseModel):
     id: int
     name: str
     tweets: List[Tweet]
+    likes: List[Like]
 
     class Config:
         orm_mode = True

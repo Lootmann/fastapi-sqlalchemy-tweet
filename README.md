@@ -105,45 +105,12 @@ CREATE TABLE users (
 
 * likes
   + [x] GET   /likes
-  + [x] GET   /users/:user_id/likes/tweets
-  + [ ] GET   /tweets/:tweet_id/likes/users (あるツイートをLikeしているUserを取得 - 取得するのはUser)
+  + [x] GET   /users/:user_id/likes/tweets (User が Like している tweets を取得)
+  + [x] GET   /tweets/:tweet_id/likes/users (あるツイートをLikeしているUserを取得 - 取得するのはUser)
   + [x] POST  /tweets/:tweet_id/likes
   + [x] DEL   /tweets/:tweet_id/likes
 
 ### API Design
-
-[Likes Introduction](https://developer.twitter.com/en/docs/twitter-api/tweets/likes/introduction)
-
-あるユーザーが Like しているTweetを全部取得 -> 取得したいはTweetsなので
-
-* `/tweets/users/user_id/likes`
-
-先頭を tweets にするとどうやっても表現が出来ない 修正
-k
-* `/users/:user_id/likes/tweets`
-
-になるけどださくね ただひと目で分かるURL
-
-次の例
-
-あるツイートがどのユーザからLikeされているかを取得
-
-* `/tweets/:tweet_id/likes/users`
-
-なんかださい REST な感じがしないのはなぜだろうか
-
-本家 Reference では
-
-> Users who have liked a Tweet - GET /api/v2/tweets/:id/liking_users
-> Tweets liked by a user       - GET /api/v2/users/:id/liked_tweets
-
-自分で設計したAPIと似たような感じにはなっていたが
-
-やっぱり REST ではない感じがする 多分RESTになってない?
-
-こうやって Endpoint を表現したほうが結局使いやすいのか
-
-REST に固執するとむしろ分かりづらくなるのかな
 
 ## Todo
 
@@ -202,3 +169,13 @@ Twitter には message にタグと呼ばれるものを埋め込める
   + 勝手に URL に API が飛んでないと勘違いしたというお話
   + というか status 404 は Not Foundなのでそもそも raise HTTPException がおかしいという話
   + Login認証失敗したら普通は 401 修正します 完全に終了
+
+* [Likes Introduction](https://developer.twitter.com/en/docs/twitter-api/tweets/likes/introduction)
+
+  + [x] あるユーザーが Like しているTweetを全部取得
+    - GET `/tweets/:tweet_id/likes/users`
+
+  + [x] GET ある Tweet に Like している User を全取得
+    - GET `/tweets/:tweet_id/likes/users`
+    - どうしてもRelationがうまくとれない
+    - ので超ださいけど User -> User.id.in_(user_ids) で取得することに
