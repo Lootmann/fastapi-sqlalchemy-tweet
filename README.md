@@ -17,10 +17,6 @@
 * RESTful Design
   + Goto wiki
 
-* 突然 Docker Compose 化!
-  + 成功! pytest, coverage, profile, web browser, async test とりあえず全部動いた
-  + と思ったらasync test やっていない！ まだSQliteのまま！
-
 * GET /tweets/:tweet_id/likes/users (あるツイートをLikeしているUserを取得 - 取得するのはUser)
 
 ## ER Diagram
@@ -174,3 +170,19 @@ Twitter には message にタグと呼ばれるものを埋め込める
   なんと Favorites は古いAPIだったことが判明
   現在は Likes というAPIに変わっておった すごい量の変更点が発生
   修正完了 実はそこまで大したことは無かった
+
+* 突然 Docker Compose 化
+  + [x] connection psql with async
+  + [x] test with asycn psql
+  + [x] migrate docker container psql
+  + [x] API test on Web Browser
+    - [x] web broswer 上での login すると/token だけが `Not Found` エラーに!
+    - test は40くらい 全部通っている auth 系も含めて
+    - 1. httpie POST /token ... OK Bearer 取得できた (???)
+    - 2. Web Broswer 再起動 -> authorize login 可能になった
+    - 意味がわからないが修正完了
+  + Compose 化すべて完了 3, 4 時間かかってないか
+  + 理由が判明 単純に `/token` でパスワード認証失敗すると `HTTP_404` が出るが
+  + Detail="User Not Found" が出力されずに "Error: Not Found" という表示しか無いため
+  + 勝手に URL に API が飛んでないと勘違いしたというお話
+  + Login認証失敗して 404 はちょっとおかしいので 401 に修正します 完全に終了
