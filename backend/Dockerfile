@@ -3,9 +3,9 @@ FROM python:3.10-buster as builder
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
 
-WORKDIR /code/
+WORKDIR /api/
 
-COPY ./requirements.txt /code/
+COPY ./requirements.txt /api/
 
 RUN pip install -U pip setuptools wheel \
   && pip install -r requirements.txt \
@@ -14,4 +14,4 @@ RUN pip install -U pip setuptools wheel \
 # Deploy
 FROM python:3.10-slim-buster
 COPY --from=builder /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages
-COPY . /code/
+COPY . /api/
