@@ -14,9 +14,12 @@ async def get_all_tweets(db: AsyncSession) -> List[TweetModel]:
     return (await db.execute(select(TweetModel))).fetchall()
 
 
-async def get_all_tweets_which_user_likes(db: AsyncSession, user_id: int) -> List[TweetModel]:
+async def get_all_tweets_which_user_likes(
+    db: AsyncSession, user_id: int
+) -> List[TweetModel]:
     """Get all tweets which a user likes"""
-    return (await db.execute(select(TweetModel).join(LikeModel).where(LikeModel.user_id == user_id))).all()
+    stmt = select(TweetModel).join(LikeModel).where(LikeModel.user_id == user_id)
+    return (await db.execute(stmt)).scalars().all()
 
 
 async def create_tweet(
@@ -33,7 +36,11 @@ async def create_tweet(
 
 
 async def find_by_id(db: AsyncSession, tweet_id: int) -> TweetModel | None:
-    stmt = select(TweetModel).options(selectinload(TweetModel.likes)).filter_by(id=tweet_id)
+    stmt = (
+        select(TweetModel)
+        .options(selectinload(TweetModel.likes))
+        .filter_by(id=tweet_id)
+    )
     result = await db.execute(stmt)
     tweet = result.scalars().first()
     return tweet if tweet else None
