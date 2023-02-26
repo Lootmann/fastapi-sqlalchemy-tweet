@@ -161,7 +161,7 @@ Login認証失敗したら普通は 401 修正します 完全に終了<br>
 [Likes Introduction](https://developer.twitter.com/en/docs/twitter-api/tweets/likes/introduction)
 
 * [x] あるユーザーが Like しているTweetを全部取得
-  + GET `/tweets/:tweet_id/likes/users`
+  + GET `/users/:user_id/likes/tweets`
 
 * [x] GET ある Tweet に Like している User を全取得
   + GET `/tweets/:tweet_id/likes/users`
