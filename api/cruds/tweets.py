@@ -2,6 +2,7 @@ from typing import List
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy.orm import selectinload
 
 from api.models.likes import Like as LikeModel
 from api.models.tweets import Tweet as TweetModel
@@ -34,10 +35,10 @@ async def create_tweet(
 
 
 async def find_by_id(db: AsyncSession, tweet_id: int) -> TweetModel | None:
-    tweet = (await db.execute(select(TweetModel).filter_by(id=tweet_id))).first()
-    if not tweet:
-        return None
-    return tweet[0]
+    stmt = select(TweetModel).options(selectinload(TweetModel.likes)).filter_by(id=tweet_id)
+    result = await db.execute(stmt)
+    tweet = result.scalars().first()
+    return tweet if tweet else None
 
 
 async def update_tweet(
