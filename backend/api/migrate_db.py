@@ -4,8 +4,8 @@ from api.models.likes import Base as LikeBase
 from api.models.tweets import Base as TweetBase
 from api.models.users import Base as UserBase
 
-DB_URL = "sqlite:///dev.db"
-engine = create_engine(DB_URL, echo=True)
+DB_URL = "postgresql://postgres:secret@localhost:5432/postgres"
+engine = create_engine(DB_URL, echo=True, isolation_level="AUTOCOMMIT")
 
 
 def reset_database():
