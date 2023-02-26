@@ -22,7 +22,7 @@ async def login_user(db: AsyncSession = Depends(get_db), form_data: OAuth2Passwo
     )
 
     if not found_user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User Not Found")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User Not Found")
 
     access_token_expires = timedelta(minutes=credential.access_token_expire_minutes)
     data = {"sub": found_user.name}
