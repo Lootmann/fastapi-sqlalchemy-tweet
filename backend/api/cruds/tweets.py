@@ -23,9 +23,6 @@ async def create_tweet(
     db: AsyncSession, current_user: UserModel, tweet_body: tweet_schema.TweetCreate
 ) -> TweetModel:
     tweet = TweetModel(**tweet_body.dict())
-    # NOTE: which is correct?
-    # tweet.user = current_user
-    # tweet.user_id = current_user.id
     current_user.tweets.append(tweet)
 
     db.add(current_user)
