@@ -73,6 +73,19 @@ class TestPostLikes:
         fav_response = like_schema.LikeCreateResponse(**resp.json())
         assert fav_response.tweet_id == tweet_id
 
+    async def test_create_like_duplicate(self, client, login_fixture):
+        _, headers = await login_fixture
+
+        tweet_body = TweetFactory.gen_tweet()
+        resp = await TweetFactory.create_tweet(client, headers, tweet_body)
+        tweet_id = resp.json()["id"]
+
+        resp = await client.post(f"/tweets/{tweet_id}/likes", headers=headers)
+        assert resp.status_code == status.HTTP_201_CREATED
+
+        resp = await client.post(f"/tweets/{tweet_id}/likes", headers=headers)
+        assert resp.status_code == status.HTTP_400_BAD_REQUEST
+
 
 @pytest.mark.asyncio
 class TestDeleteLikes:
@@ -94,3 +107,27 @@ class TestDeleteLikes:
         resp = await client.delete(f"/tweets/{tweet_id}/likes", headers=headers)
         assert resp.status_code == status.HTTP_200_OK
         assert resp.json() == None
+
+    async def test_delete_like(self, client, login_fixture):
+        _, headers = await login_fixture
+
+        tweet_body = TweetFactory.gen_tweet()
+        resp = await TweetFactory.create_tweet(client, headers, tweet_body)
+        tweet_id = resp.json()["id"]
+
+        # like
+        resp = await LikeFactory.create_like(client, headers, tweet_id)
+        assert resp.status_code == status.HTTP_201_CREATED
+
+        resp = await client.get(f"/tweets/{tweet_id}/likes", headers=headers)
+        assert len(resp.json()) == 1
+
+        # delete
+        resp = await client.delete(f"/tweets/{tweet_id}/likes", headers=headers)
+        assert resp.status_code == status.HTTP_200_OK
+        assert resp.json() == None
+
+        # not found
+        resp = await client.delete(f"/tweets/{tweet_id}/likes", headers=headers)
+        assert resp.status_code == status.HTTP_400_BAD_REQUEST
+        assert resp.json() == {"detail": f"Tweet: {tweet_id} is not liked by you"}
