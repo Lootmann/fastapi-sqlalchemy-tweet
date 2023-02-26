@@ -200,4 +200,5 @@ Twitter には message にタグと呼ばれるものを埋め込める
   + 理由が判明 単純に `/token` でパスワード認証失敗すると `HTTP_404` が出るが
   + Detail="User Not Found" が出力されずに "Error: Not Found" という表示しか無いため
   + 勝手に URL に API が飛んでないと勘違いしたというお話
-  + Login認証失敗して 404 はちょっとおかしいので 401 に修正します 完全に終了
+  + というか status 404 は Not Foundなのでそもそも raise HTTPException がおかしいという話
+  + Login認証失敗したら普通は 401 修正します 完全に終了
