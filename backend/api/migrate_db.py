@@ -4,7 +4,8 @@ from api.models.likes import Base as LikeBase
 from api.models.tweets import Base as TweetBase
 from api.models.users import Base as UserBase
 
-DB_URL = "sqlite:///dev.db"
+# Creating DB does not need Async Session
+DB_URL = "postgresql://postgres:postgres@db:5432/postgres"
 engine = create_engine(DB_URL, echo=True)
 
 

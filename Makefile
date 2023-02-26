@@ -1,28 +1,43 @@
-OPTION = PYTHONDONTWRITEBYTECODE=1
-
 run:
-	$(OPTION) python3 -m uvicorn api.main:app --reload
+	docker compose up -d
 
-test:
-	$(OPTION) python3 -m pytest -svv
+build:
+	docker compose build
 
-cov:
-	$(OPTION) python3 -m pytest --cov --cov-report=html
+buildup:
+	docker compose up --build
 
-measure:
-	$(OPTION) python3 -m pytest --durations=0 -vv
+down:
+	docker compose down -v
 
-profile:
-	$(OPTION) python3 -m pytest --profile-svg
+logs:
+	docker compose logs -ft
+
+restart:
+	docker compose restart
 
 migrate:
-	$(OPTION) python3 -m api.migrate_db
+	docker compose exec app python3 -m api.migrate_db
 
-docs:
-	google-chrome http://127.0.0.1:8000/docs
+login-app:
+	docker exec -it fastapi-container /bin/bash
 
-req:
-	pip freeze > requirements.txt
+login-db:
+	docker exec -it fastapi-postgre psql -U postgres
 
-pre:
-	pre-commit run --all-files
+# tests
+test:
+	docker compose exec app python3.10 -m pytest -svv
+
+s:
+	docker compose exec app python3.10 -m pytest -svv ./tests/test_routers/test_users.py
+
+# preformance
+measure:
+	docker compose exec app python3.10 -m pytest --durations=0
+
+cov:
+	docker compose exec app python3.10 -m pytest --cov --cov-report=html
+
+profile:
+	docker compose exec app python3.10 -m pytest --profile-svg
