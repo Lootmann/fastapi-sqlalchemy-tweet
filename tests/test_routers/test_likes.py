@@ -2,7 +2,7 @@ import pytest
 from fastapi import status
 
 from api.schemas import likes as like_schema
-from tests.factories import LikeFactory, TweetFactory
+from tests.factories import LikeFactory, TweetFactory, UserFactory, create_access_token
 from tests.init_async_client import async_client as client
 
 
@@ -85,6 +85,12 @@ class TestPostLikes:
 
         resp = await client.post(f"/tweets/{tweet_id}/likes", headers=headers)
         assert resp.status_code == status.HTTP_400_BAD_REQUEST
+
+    async def test_create_like_with_wrong_tweet_id(self, client, login_fixture):
+        _, headers = await login_fixture
+
+        resp = await client.post(f"/tweets/123/likes", headers=headers)
+        assert resp.status_code == status.HTTP_404_NOT_FOUND
 
 
 @pytest.mark.asyncio
