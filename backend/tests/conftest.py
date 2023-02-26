@@ -24,7 +24,9 @@ async def login_fixture(client) -> Tuple[user_model.User, dict]:
         headers is dict like {"Authorization": "Bearer eyj....."}
     """
     user = user_model.User(name=random_string(), password=random_string())
-    resp = await client.post("/users", json={"name": user.name, "password": user.password})
+    resp = await client.post(
+        "/users", json={"name": user.name, "password": user.password}
+    )
     user.id = resp.json()["id"]
 
     resp = await client.post(

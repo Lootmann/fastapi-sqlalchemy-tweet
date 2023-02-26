@@ -68,19 +68,25 @@ class TestGetUser:
 class TestPostUser:
     async def test_post_user(self, client):
         user = UserFactory.gen_user()
-        resp = await client.post("/users", json={"name": user.name, "password": user.password})
+        resp = await client.post(
+            "/users", json={"name": user.name, "password": user.password}
+        )
         assert resp.status_code == status.HTTP_201_CREATED
 
     async def test_post_many_users(self, client):
         user = UserFactory.gen_user()
-        resp = await client.post("/users", json={"name": user.name, "password": user.password})
+        resp = await client.post(
+            "/users", json={"name": user.name, "password": user.password}
+        )
         assert resp.status_code == status.HTTP_201_CREATED
 
     async def test_post_dulicate_user_name(self, client):
         user = UserFactory.gen_user()
 
         await UserFactory.create_user(client, user)
-        resp = await client.post("/users", json={"name": user.name, "password": user.password})
+        resp = await client.post(
+            "/users", json={"name": user.name, "password": user.password}
+        )
         assert resp.status_code == status.HTTP_409_CONFLICT
         assert resp.json() == {"detail": f"Duplicate Username: {user.name}"}
 
@@ -103,7 +109,9 @@ class TestUpdateUser:
     async def test_update_user(self, client, login_fixture):
         _, headers = await login_fixture
 
-        resp = await client.patch("/users", json={"name": "updated", "password": "updated"}, headers=headers)
+        resp = await client.patch(
+            "/users", json={"name": "updated", "password": "updated"}, headers=headers
+        )
         assert resp.status_code == status.HTTP_200_OK
 
         # this PATCH changes password, so headers are also changed
@@ -111,15 +119,21 @@ class TestUpdateUser:
         assert resp.status_code == status.HTTP_401_UNAUTHORIZED
 
         # re-login
-        new_headers = await create_access_token(client, username="updated", password="updated")
+        new_headers = await create_access_token(
+            client, username="updated", password="updated"
+        )
         resp = await client.get("users", headers=new_headers)
         assert resp.status_code == status.HTTP_200_OK
 
-    async def test_update_user_which_tests_user_schema_validation(self, client, login_fixture):
+    async def test_update_user_which_tests_user_schema_validation(
+        self, client, login_fixture
+    ):
         # test schema validation
         _, headers = await login_fixture
 
-        resp = await client.patch("/users", json={"name": "", "password": ""}, headers=headers)
+        resp = await client.patch(
+            "/users", json={"name": "", "password": ""}, headers=headers
+        )
         assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert resp.json() == {"detail": "invalid request body"}
 
@@ -131,11 +145,15 @@ class TestUpdateUser:
         assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert resp.json() == {"detail": "invalid request body"}
 
-        resp = await client.patch("/users", json={"name": "short", "password": ""}, headers=headers)
+        resp = await client.patch(
+            "/users", json={"name": "short", "password": ""}, headers=headers
+        )
         assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert resp.json() == {"detail": "Username Length should be longer than 6."}
 
-        resp = await client.patch("/users", json={"name": "", "password": "small"}, headers=headers)
+        resp = await client.patch(
+            "/users", json={"name": "", "password": "small"}, headers=headers
+        )
         assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert resp.json() == {"detail": "Password Length should be longer than 6."}
 
