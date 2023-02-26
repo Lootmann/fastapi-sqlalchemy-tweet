@@ -57,6 +57,13 @@ class UserCreate(BaseModel):
     class Config:
         orm_mode = True
 
+        schema_extra = {
+            "example": {
+                "name": "guest user",
+                "password": "hogehoge",
+            }
+        }
+
 
 class UserCreateResponse(BaseModel):
     id: int
