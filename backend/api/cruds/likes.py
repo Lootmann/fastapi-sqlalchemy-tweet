@@ -21,7 +21,7 @@ async def find_by_user_id_and_tweet_id(
         .filter(LikeModel.user_id == user_id)
         .filter(LikeModel.tweet_id == tweet_id)
     )
-    like = res.scalar().first()
+    like = res.scalar()
     return like if like else None
 
 

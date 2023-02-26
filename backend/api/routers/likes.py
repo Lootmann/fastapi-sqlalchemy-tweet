@@ -39,8 +39,7 @@ async def get_all_tweets_which_user_likes(
     db: AsyncSession = Depends(get_db),
     _=Depends(auth_api.get_current_active_user),
 ):
-    tweets = await tweet_api.get_all_tweets_which_user_likes(db, user_id)
-    return [t[0] for t in tweets]
+    return await tweet_api.get_all_tweets_which_user_likes(db, user_id)
 
 
 @router.get(
