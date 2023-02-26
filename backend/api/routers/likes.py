@@ -16,14 +16,17 @@ from api.schemas import users as user_schema
 router = APIRouter(tags=["likes"])
 
 
-@router.get("/likes", response_model=List[like_schema.Like], status_code=status.HTTP_200_OK)
+@router.get(
+    "/likes",
+    response_model=List[like_schema.Like],
+    status_code=status.HTTP_200_OK,
+)
 async def get_all_likes(
     db: AsyncSession = Depends(get_db),
     current_user=Depends(auth_api.get_current_active_user),
 ):
     """get all likes by login user"""
-    results = await like_api.get_all_likes(db, current_user.id)
-    return [r[0] for r in results]
+    return await like_api.get_all_likes(db, current_user.id)
 
 
 @router.get(
@@ -41,7 +44,9 @@ async def get_all_tweets_which_user_likes(
 
 
 @router.get(
-    "/tweets/{tweet_id}/likes/users", response_model=List[user_schema.User], status_code=status.HTTP_200_OK
+    "/tweets/{tweet_id}/likes/users",
+    response_model=List[user_schema.User],
+    status_code=status.HTTP_200_OK,
 )
 async def get_all_users_which_likes_tweet(
     tweet_id: int,
@@ -63,16 +68,25 @@ async def create_like(
 ):
     like = await like_api.find_by_user_id_and_tweet_id(db, current_user.id, tweet_id)
     if like:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You already like this tweet.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="You already like this tweet.",
+        )
 
     tweet = await tweet_api.find_by_id(db, tweet_id)
     if not tweet:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Tweet: {tweet_id} Not Found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Tweet: {tweet_id} Not Found"
+        )
 
     return await like_api.create_like(db, tweet, current_user)
 
 
-@router.delete("/tweets/{tweet_id}/likes", response_model=None, status_code=status.HTTP_200_OK)
+@router.delete(
+    "/tweets/{tweet_id}/likes",
+    response_model=None,
+    status_code=status.HTTP_200_OK,
+)
 async def delete_like(
     tweet_id: int,
     db: AsyncSession = Depends(get_db),
@@ -81,6 +95,7 @@ async def delete_like(
     like = await like_api.find_by_user_id_and_tweet_id(db, current_user.id, tweet_id)
     if not like:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=f"Tweet: {tweet_id} is not liked by you"
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Tweet: {tweet_id} is not liked by you",
         )
     return await like_api.delete_like(db, like)
