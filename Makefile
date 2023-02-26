@@ -7,7 +7,6 @@ build:
 buildup:
 	docker compose up --build
 
-# -v means remove all volumes attached
 down:
 	docker compose down -v
 
@@ -17,14 +16,26 @@ logs:
 restart:
 	docker compose restart
 
+migrate:
+	docker compose exec app python3.10 api.migration_db.py
+
+login-app:
+	docker exec -it fastapi-container /bin/bash
+
+login-db:
+	docker exec -it fastapi-postgre psql -U postgres
+
 # tests
 test:
 	docker compose exec app python3.10 -m pytest -svv
 
+s:
+	docker compose exec app python3.10 -m pytest -svv ./tests/test_routers/test_users.py
+
+# preformance
 measure:
 	docker compose exec app python3.10 -m pytest --durations=0
 
-# preformance
 cov:
 	docker compose exec app python3.10 -m pytest --cov --cov-report=html
 
