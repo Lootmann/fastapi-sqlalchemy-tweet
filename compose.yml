@@ -1,6 +1,6 @@
 services:
   app:
-    container_name: fastapi-contianer
+    container_name: fastapi-container
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -26,15 +26,18 @@ services:
       context: ./db
       dockerfile: Dockerfile
     env_file: ./db/.env
-
     volumes:
       - type: volume
         source: postgres-volume
         target: /var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
 
     ports:
-      - published: 5432
-        target: 5432
+      - target: 5432
+        published: 5432
 
 volumes:
   postgres-volume:
