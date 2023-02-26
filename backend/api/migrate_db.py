@@ -1,11 +1,12 @@
 from sqlalchemy import create_engine
 
-from api.db import ASYNC_DB_URL
 from api.models.likes import Base as LikeBase
 from api.models.tweets import Base as TweetBase
 from api.models.users import Base as UserBase
 
-engine = create_engine(ASYNC_DB_URL, echo=True, isolation_level="AUTOCOMMIT")
+# Creating DB does not need Async Session
+DB_URL = "postgresql://postgres:postgres@db:5432/postgres"
+engine = create_engine(DB_URL, echo=True)
 
 
 def reset_database():
