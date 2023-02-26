@@ -31,9 +31,13 @@ async def get_all_likes(
     response_model=List[tweet_schema.Tweet],
     status_code=status.HTTP_200_OK,
 )
-async def get_all_tweets_which_user_likes(user_id: int, db: AsyncSession = Depends(get_db)):
+async def get_all_tweets_which_user_likes(
+    user_id: int,
+    db: AsyncSession = Depends(get_db),
+    _=Depends(auth_api.get_current_active_user),
+):
     tweets = await tweet_api.get_all_tweets_which_user_likes(db, user_id)
-    return [u[0] for u in tweets]
+    return [t[0] for t in tweets]
 
 
 @router.post(
