@@ -105,7 +105,7 @@ CREATE TABLE users (
 
 * likes
   + [x] GET   /likes
-  + [ ] GET   /users/:user_id/likes/tweets
+  + [x] GET   /users/:user_id/likes/tweets
   + [ ] GET   /tweets/:tweet_id/likes/users (あるツイートをLikeしているUserを取得 - 取得するのはUser)
   + [x] POST  /tweets/:tweet_id/likes
   + [x] DEL   /tweets/:tweet_id/likes
