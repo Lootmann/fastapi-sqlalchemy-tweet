@@ -21,6 +21,7 @@ services:
         condition: service_started
 
   db:
+    container_name: fastapi-postgre
     build:
       context: ./db
       dockerfile: Dockerfile
@@ -28,7 +29,7 @@ services:
 
     volumes:
       - type: volume
-        source: test-db
+        source: postgres-volume
         target: /var/lib/postgresql/data
 
     ports:
@@ -36,4 +37,5 @@ services:
         target: 5432
 
 volumes:
-  test-db:
+  postgres-volume:
+    name: 19-fastapi-sqlalchemy-postgres-data
