@@ -23,4 +23,4 @@ class User(Base):
     likes: Mapped[List["Like"]] = relationship("Like", back_populates="user")
 
     def __repr__(self) -> str:
-        return f"<User (id, name, tweets) = ({self.id}, {self.name}, {self.tweets})>"
+        return f"<User (id, name, tweets, likes) = ({self.id}, {self.name}, {self.tweets}, {self.likes})>"
