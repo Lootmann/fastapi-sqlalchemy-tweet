@@ -3,7 +3,7 @@ from typing import List
 from sqlalchemy import select
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import joinedload, selectinload
 
 from api.cruds import auths as auth_api
 from api.models.likes import Like as LikeModel
@@ -29,8 +29,10 @@ async def get_all_users(db: AsyncSession) -> List[UserModel]:
 
 
 async def get_all_users_which_likes_tweet(db: AsyncSession, tweet_id: int) -> List[UserModel]:
-    results = await db.execute(select(UserModel).join(LikeModel).filter(LikeModel.tweet_id == tweet_id)).all()
-    return results
+    print("\n>>> cruds - before")
+    results = await db.execute(select(UserModel).options(joinedload(UserModel.likes)))
+    print("\n>>> cruds - after")
+    return results.all()
 
 
 async def find_by_id(db: AsyncSession, user_id: int) -> UserModel | None:
@@ -42,6 +44,7 @@ async def find_by_id(db: AsyncSession, user_id: int) -> UserModel | None:
 
 
 async def find_by_name(db: AsyncSession, username: str) -> UserModel:
+    # TODO: I think this is pretty heavy preformance. this method uses Depends(get_current_user) anywhere D:
     result: Result = await db.execute(
         select(UserModel)
         .filter_by(name=username)
