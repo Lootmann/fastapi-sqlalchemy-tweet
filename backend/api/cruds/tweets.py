@@ -11,7 +11,7 @@ from api.schemas import tweets as tweet_schema
 
 
 async def get_all_tweets(db: AsyncSession) -> List[TweetModel]:
-    return (await db.execute(select(TweetModel))).fetchall()
+    return (await db.execute(select(TweetModel))).scalars().all()
 
 
 async def get_all_tweets_which_user_likes(
