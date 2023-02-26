@@ -41,9 +41,7 @@ async def find_by_id(db: AsyncSession, tweet_id: int) -> TweetModel | None:
         .options(selectinload(TweetModel.likes))
         .filter_by(id=tweet_id)
     )
-    result = await db.execute(stmt)
-    tweet = result.scalars().first()
-    return tweet if tweet else None
+    return (await db.execute(stmt)).scalar()
 
 
 async def update_tweet(
