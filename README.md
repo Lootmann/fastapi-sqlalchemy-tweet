@@ -166,21 +166,4 @@ Login認証失敗したら普通は 401 修正します 完全に終了<br>
 
 * [x] GET ある Tweet に Like している User を全取得
   + GET `/tweets/:tweet_id/likes/users`
-
-どうしてもRelationがうまくとれない<br>
-ので超ださいけど User -> User.id.in_(user_ids) で取得することに<br>
-
-```python
-stmt = (
-  select(User)
-  .join(User.likes)
-  .join(Like.tweet)
-  .filter(Tweet.id == tweet.id)
-  .options(selectinload(User.tweets), selectinload(User.likes))
-)
-
-result = await db.execute(stmt)
-users = result.scalars().all()
-```
-
-色々調べてたらどうやら出来たっぽい
+  + See api/cruds/users.py::get_all_users_which_likes_tweet

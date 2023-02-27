@@ -54,27 +54,51 @@ class TestGetLikingTweets:
         assert resp.status_code == status.HTTP_200_OK
         assert len(resp.json()) == 10
 
+    async def _create_user_and_like_tweet(self, client, headers, tweet_id):
+        """_ceate_user_and_likextweet
+        test helper function
+        """
+        user = UserFactory.gen_user()
+        resp = await UserFactory.create_user(client, user)
+        assert resp.status_code == status.HTTP_201_CREATED
+
+        headers = await create_access_token(client, user.name, user.password)
+        resp = await client.post(f"/tweets/{tweet_id}/likes", headers=headers)
+        assert resp.status_code == status.HTTP_201_CREATED
+
     async def test_get_all_users_which_like_the_tweet(self, client, login_fixture):
+        """
+        this test takes too long. because this private method `self._create_user_and_tweet`
+        has create user and create access_token.
+        """
         _, headers = await login_fixture
 
-        # create one tweet
-        tweet = TweetFactory.gen_tweet()
-        resp = await TweetFactory.create_tweet(client, headers, tweet)
-        tweet_id = resp.json()["id"]
+        # create 3 tweets
+        tweet_ids = []
 
-        # create many user and like the tweet
+        for _ in range(3):
+            tweet = TweetFactory.gen_tweet()
+            resp = await TweetFactory.create_tweet(client, headers, tweet)
+            tweet_id = resp.json()["id"]
+            tweet_ids.append(tweet_id)
+
+        # create new user and he likes tweet
+        for _ in range(3):
+            await self._create_user_and_like_tweet(client, headers, tweet_ids[0])
+
+        for _ in range(5):
+            await self._create_user_and_like_tweet(client, headers, tweet_ids[1])
+
         for _ in range(10):
-            new_user = UserFactory.gen_user()
-            resp = await UserFactory.create_user(client, new_user)
-            assert resp.status_code == status.HTTP_201_CREATED
+            await self._create_user_and_like_tweet(client, headers, tweet_ids[2])
 
-            new_headers = await create_access_token(
-                client, new_user.name, new_user.password
-            )
-            resp = await client.post(f"/tweets/{tweet_id}/likes", headers=new_headers)
-            assert resp.status_code == status.HTTP_201_CREATED
+        resp = await client.get(f"/tweets/{tweet_ids[0]}/likes/users", headers=headers)
+        assert len(resp.json()) == 3
 
-        resp = await client.get(f"/tweets/{tweet_id}/likes/users", headers=headers)
+        resp = await client.get(f"/tweets/{tweet_ids[1]}/likes/users", headers=headers)
+        assert len(resp.json()) == 5
+
+        resp = await client.get(f"/tweets/{tweet_ids[2]}/likes/users", headers=headers)
         assert len(resp.json()) == 10
 
 
