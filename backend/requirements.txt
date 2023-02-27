@@ -10,6 +10,7 @@ ecdsa==0.18.0
 exceptiongroup==1.1.0
 fastapi==0.89.1
 gprof2dot==2022.7.29
+graphviz==0.20.1
 greenlet==2.0.2
 h11==0.14.0
 httpcore==0.16.3
@@ -24,6 +25,8 @@ pluggy==1.0.0
 psycopg2-binary==2.9.5
 pyasn1==0.4.8
 pydantic==1.10.4
+pydot==1.4.2
+pyparsing==3.0.9
 pytest==7.2.1
 pytest-asyncio==0.20.3
 pytest-cov==4.0.0

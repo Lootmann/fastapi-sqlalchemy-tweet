@@ -9,7 +9,9 @@ COPY ./requirements.txt /usr/code/
 
 RUN pip install -U pip setuptools wheel \
   && pip install -r requirements.txt \
-  && rm -rf /root/.cache/pip
+  && apt-get clean \
+  && rm -rf /root/.cache/pip \
+  && rm -rf /var/lib/apt/lists/*
 
 # Deploy
 FROM python:3.10-slim-buster
