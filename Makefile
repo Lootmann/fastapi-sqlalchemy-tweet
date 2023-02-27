@@ -42,5 +42,6 @@ cov:
 report:
 	google-chrome ./backend/htmlcov/index.html
 
-profile:
-	docker compose exec app python3.10 -m pytest --profile-svg
+# apt-get install graphviz, but can't genrate svg ... D:
+# profile:
+# 	docker compose exec app python3.10 -m pytest --profile-svg
