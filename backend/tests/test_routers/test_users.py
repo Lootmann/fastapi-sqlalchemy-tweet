@@ -28,7 +28,7 @@ class TestGetAllUsers:
         assert resp.status_code == status.HTTP_200_OK
         assert len(resp.json()) == 2
 
-    async def test_get_all_users(self, client):
+    async def test_get_many_users(self, client):
         for _ in range(4):
             await client.post(
                 "/users",
@@ -74,11 +74,12 @@ class TestPostUser:
         assert resp.status_code == status.HTTP_201_CREATED
 
     async def test_post_many_users(self, client):
-        user = UserFactory.gen_user()
-        resp = await client.post(
-            "/users", json={"name": user.name, "password": user.password}
-        )
-        assert resp.status_code == status.HTTP_201_CREATED
+        for _ in range(5):
+            user = UserFactory.gen_user()
+            resp = await client.post(
+                "/users", json={"name": user.name, "password": user.password}
+            )
+            assert resp.status_code == status.HTTP_201_CREATED
 
     async def test_post_dulicate_user_name(self, client):
         user = UserFactory.gen_user()
