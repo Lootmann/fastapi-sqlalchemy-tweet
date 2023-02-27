@@ -117,13 +117,6 @@ CREATE TABLE users (
 
 * [Lists](https://help.twitter.com/ja/using-twitter/twitter-lists)
 
-> リストを使用することで、タイムラインに表示するツイートをカスタマイズ、整理、優先順位付けできます<br>
-> Twitterで他のユーザーが作成したリストに参加したり、自分のアカウントから、グループ、トピック、<br>
-> または興味関心の対象別に、他のアカウントのリストを作成したりできます<br>
-> リストタイムラインには、リストに登録されたアカウントのツイートのみが表示されます <br>
-> また、お気に入りのリストを自分のタイムラインの上部に固定しておけば <br>
-> 重要なアカウントからのツイートを見逃すこともありません<br>
-
 こんなに複雑なものはいらない<br>
 Lists/members (tweet users) があればOKかな<br>
 そこに登録されている members のツイートを一覧で表示できるみたいな機能でOK<br>
@@ -176,3 +169,18 @@ Login認証失敗したら普通は 401 修正します 完全に終了<br>
 
 どうしてもRelationがうまくとれない<br>
 ので超ださいけど User -> User.id.in_(user_ids) で取得することに<br>
+
+```python
+stmt = (
+  select(User)
+  .join(User.likes)
+  .join(Like.tweet)
+  .filter(Tweet.id == tweet.id)
+  .options(selectinload(User.tweets), selectinload(User.likes))
+)
+
+result = await db.execute(stmt)
+users = result.scalars().all()
+```
+
+色々調べてたらどうやら出来たっぽい
