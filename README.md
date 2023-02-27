@@ -18,6 +18,10 @@
   + --line-length=88 Black Official の line length になぜか変更してみる
   + 今までは 100 行
 
+* Dockernize したアプリのテンプレート化
+  + Git からCloneして 適当に .env 作ったらすぐに使えるテンプレートを作成してみよう
+  + .env に Random な値を入れる .sh を作成すればすぐに使えるようにする
+
 ## ER Diagram
 
 ```mermaid
