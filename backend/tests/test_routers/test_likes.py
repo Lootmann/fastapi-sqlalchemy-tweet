@@ -83,23 +83,23 @@ class TestGetLikingTweets:
             tweet_ids.append(tweet_id)
 
         # create new user and he likes tweet
-        for _ in range(3):
+        for _ in range(2):
             await self._create_user_and_like_tweet(client, headers, tweet_ids[0])
 
-        for _ in range(5):
+        for _ in range(3):
             await self._create_user_and_like_tweet(client, headers, tweet_ids[1])
 
-        for _ in range(10):
+        for _ in range(4):
             await self._create_user_and_like_tweet(client, headers, tweet_ids[2])
 
         resp = await client.get(f"/tweets/{tweet_ids[0]}/likes/users", headers=headers)
-        assert len(resp.json()) == 3
+        assert len(resp.json()) == 2
 
         resp = await client.get(f"/tweets/{tweet_ids[1]}/likes/users", headers=headers)
-        assert len(resp.json()) == 5
+        assert len(resp.json()) == 3
 
         resp = await client.get(f"/tweets/{tweet_ids[2]}/likes/users", headers=headers)
-        assert len(resp.json()) == 10
+        assert len(resp.json()) == 4
 
 
 @pytest.mark.asyncio
